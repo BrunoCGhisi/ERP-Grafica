@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, jsonify
 from database.db import db
 from models.usuarios import Usuarios
 
@@ -18,14 +18,14 @@ def usuariosController():
     elif request.method == 'GET':
         try:
             data = Usuarios.query.all()
-            newData = {'usuarios': [autor.to_dict() for autor in data]} #pegando cada obj autor, e tranformando num dicionario
+            newData = {'usuarios': [usuario.to_dict() for usuario in data]} #pegando cada obj usuario, e tranformando num dicionario
             return newData, 200
-
+        
         except Exception as e:
             return f'Não foi possível buscar. Erro {str(e)}', 405
         
 
-    elif request.method == 'PATCH':
+    elif request.method == 'PUT':
             try:
                 id = request.args.to_dict().get('id')
                 usuario = Usuarios.query.get(id)
@@ -44,7 +44,7 @@ def usuariosController():
                 return "Usuário atualizado com sucesso", 202
 
             except Exception as e:
-                return f"Não foi possível atualizar o autor. Erro:{str(e)}", 405
+                return f"Não foi possível atualizar o usuario. Erro:{str(e)}", 405
             
 
     elif request.method == 'DELETE':
