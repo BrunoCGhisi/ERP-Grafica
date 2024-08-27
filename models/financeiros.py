@@ -2,7 +2,7 @@ from database.db import db
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 
-class Financeiro(db.Model):
+class Financeiros(db.Model):
     def to_dict(self):
         return{
             'id': self.id,
@@ -16,11 +16,7 @@ class Financeiro(db.Model):
             'idCliente': self.idCliente,
             'idBanco': self.idBanco,
             'idFormaPgto': self.formaPgto,
-            'situacao': self.situacao,
-            'estado': self.estado,
-            'numero': self.numero,
-            'cidade': self.cidade,
-            'complemento': self.complemento
+            'situacao': self.situacao
             }
 
     id = db.Column(db.Integer, primary_key = True, nullable=False)

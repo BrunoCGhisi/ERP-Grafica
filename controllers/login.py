@@ -21,3 +21,6 @@ def login():
 
     else:
         return "Método HTTP inválido"
+    
+
+    # PRECISO ARRUMAR AQUELE NEGOCIO DE ELE SEMPRE DAR INCORRETO 

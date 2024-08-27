@@ -11,7 +11,8 @@ class Vendas(db.Model):
             'data': self.data,
             'isVendaOs': self.isVendaOs, #conferir
             'situacao': self.situacao,
-            'totalVenda': self.totalVenda, #conferir
+            'totalVenda': self.totalVenda,
+            'desconto': self.desconto #conferir
         }
     
     id = db.Column(db.Integer, primary_key=True, nullable=False)
@@ -21,15 +22,17 @@ class Vendas(db.Model):
     isVendaOs = db.Column(db.Integer, nullable=False)
     situacao = db.Column(db.Date, nullable=False)
     totalVenda = db.Column(db.Integer, nullable=False)
+    desconto = db.Column(db.Integer, nullable=True)
 
     cliente = relationship('Clientes', backref='vendas')
     usuario = relationship('Usuarios', backref='vendas')
 
-    def __init__(self, idCliente, idVendedor, data, isVendaOs, situacao, totalVenda):
+    def __init__(self, idCliente, idVendedor, data, isVendaOs, situacao, totalVenda, desconto):
         self.idCliente = idCliente
         self.idVendedor = idVendedor
         self.data = data
         self.isVendaOs = isVendaOs
         self.situacao = situacao
         self.totalVenda = totalVenda
+        self.desconto = desconto
 

@@ -2,7 +2,7 @@ from database.db import db
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 
-class Forma_pgto(db.Model):
+class Formas_pgto(db.Model):
     def to_dict(self):
         return{
             'id': self.id,
