@@ -7,7 +7,7 @@ class Produtos_categorias(db.Model): #criando representações das tabelas do ba
             'categoria': self.categoria
         }
     
-    id_autor = db.Column(db.Integer, primary_key = True, nullable=False)
+    id = db.Column(db.Integer, primary_key = True, nullable=False)
     categoria = db.Column(db.String, nullable=False)
 
     def __init__(self, categoria):

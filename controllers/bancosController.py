@@ -28,9 +28,10 @@ def bancosController():
     elif request.method == 'PUT':
             try:
                 id = request.args.to_dict().get('id')
+                print("id", id)
                 banco = Bancos.query.get(id)
                 data = request.get_json() #pega todos os dados
-
+                print(banco)
                 if banco is None:
                     return{'error': 'Banco não encontrado'}, 405
                 

@@ -20,7 +20,7 @@ class Usuarios(db.Model):
     def __init__(self, nome, email, senha, isAdm):
         self.nome = nome
         self.email = email
-        self.senha = generate_password_hash(senha)[:64]
+        self.senha = generate_password_hash(senha)
         self.isAdm = isAdm
 
     def verify_senha(self, senhas):

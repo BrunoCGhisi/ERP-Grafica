@@ -29,13 +29,13 @@ class Financeiros(db.Model):
     dataPagamento = db.Column(db.Date, nullable=False)
     idCliente = db.Column(ForeignKey('clientes.id'), nullable=False)
     idBanco = db.Column(ForeignKey('bancos.id'), nullable=False)
-    idFormaPgto = db.Column(ForeignKey('forma_pgto.id'), nullable=False)
+    idFormaPgto = db.Column(ForeignKey('formas_pgto.id'), nullable=False)
     situacao = db.Column(db.Integer, nullable=False)
 
-    venda = relationship('Vendas', backref='financeiro')
-    cliente = relationship('Clientes', backref='financeiro')
-    banco = relationship('Bancos', backref='financeiro')
-    forma_pgto = relationship('Forma_pgto', backref='financeiro')
+    venda = relationship('Vendas', backref='financeiros')
+    cliente = relationship('Clientes', backref='financeiros')
+    banco = relationship('Bancos', backref='financeiros')
+    forma_pgto = relationship('Formas_pgto', backref='financeiros')
 
     def __init__(self, descricao, idVenda, isPagarReceber, valor, dataVencimento, dataCompetencia, dataPagamento, idCliente, idBanco, formaPgto, situacao):
         self.descricao = descricao
