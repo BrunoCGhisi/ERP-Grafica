@@ -7,12 +7,14 @@ def clientesController():
     if request.method == 'POST':
         try:
             data = request.get_json() # converte em python
-            clientes = Clientes(data['nome'], data['nomeFantasia'], data['cpfCnpj'], data['email'], data['telefone'], data['isFornecedor'], data['cadastroData'], data['numIe'], data['statusIe'], data['endereco'], data['cep'], data['estado'], data['numero'], data['cidade'], data['complemento'])
+            clientes = Clientes(data['nome'], data['cpfCnpj'], data['email'], data['telefone'], data['isFornecedor'], data['dataCadastro'], data['nomeFantasia'], data['numIe'], data['statusIe'], data['endereco'], data['cep'], data['estado'], data['numero'], data['cidade'], data['complemento'])
+
             db.session.add(clientes)
             db.session.commit()
             return 'Clientes adicionados com sucesso!', 200
-        except Exception as e:
+        except Exception as e:  
             return f'Não foi possível inserir. Erro {str(e)}', 405
+
         
 
     elif request.method == 'GET':
@@ -41,7 +43,8 @@ def clientesController():
                 cliente.email = data.get('email', cliente.email)   
                 cliente.telefone = data.get('telefone', cliente.telefone)
                 cliente.isFornecedor = data.get('isFornecedor', cliente.isFornecedor)   
-                cliente.cadastroData = data.get('cadastroData', cliente.cadastroData)   
+                cliente.dataCadastro = data.get('dataCadastro', cliente.dataCadastro)
+                cliente.numIe = data.get('numIe', cliente.numIe)   
                 cliente.statusIe = data.get('statusIe', cliente.statusIe)   
                 cliente.endereco = data.get('endereco', cliente.endereco)
                 cliente.cep = data.get('cep', cliente.cep)   

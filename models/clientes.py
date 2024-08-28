@@ -10,7 +10,7 @@ class Clientes(db.Model):
             'email': self.email,
             'telefone': self.telefone,
             'isFornecedor': self.isFornecedor,
-            'cadastroData': self.cadastroData,
+            'dataCadastro': self.dataCadastro,
             'numIe': self.numIe,
             'statusIe': self.statusIe,
             'endereco': self.endereco,
@@ -23,29 +23,29 @@ class Clientes(db.Model):
 
     id = db.Column(db.Integer, primary_key = True, nullable=False)
     nome = db.Column(db.String, nullable=False)
-    nomeFantasia = db.Column(db.String)
+    nomeFantasia = db.Column(db.String, nullable=True)
     cpfCnpj = db.Column(db.String, nullable=False) #confirmar se é string mesmo
     email = db.Column(db.String, nullable=False)
     telefone = db.Column(db.String, nullable=False)
     isFornecedor = db.Column(db.Boolean, nullable=False)
-    cadastroData = db.Column(db.Date, nullable=False)
-    numIe = db.Column(db.Integer)
-    statusIe = db.Column(db.Integer)
-    endereco = db.Column(db.String)
-    cep = db.Column(db.Integer)
-    estado = db.Column(db.String)
-    numero = db.Column(db.Integer)
-    cidade = db.Column(db.String)
-    complemento = db.Column(db.String)
+    dataCadastro = db.Column(db.Date, nullable=False)
+    numIe = db.Column(db.Integer, nullable=True)
+    statusIe = db.Column(db.Boolean, nullable=True)
+    endereco = db.Column(db.String, nullable=True)
+    cep = db.Column(db.Integer, nullable=True)
+    estado = db.Column(db.String, nullable=True)
+    numero = db.Column(db.Integer, nullable=True)
+    cidade = db.Column(db.String, nullable=True)
+    complemento = db.Column(db.String, nullable=True)
 
-    def __init__(self, nome, nomeFantasia, cpfCnpj, email, telefone, isFornecedor, cadastroData, numIe, statusIe, endereco, cep, estado, numero, cidade, complemento):
+    def __init__(self, nome, cpfCnpj, email, telefone, isFornecedor, dataCadastro, nomeFantasia, numIe, statusIe, endereco, cep, estado, numero, cidade, complemento):
         self.nome = nome
-        self.nomeFantasia = nomeFantasia
         self.cpfCnpj = cpfCnpj
         self.email = email
         self.telefone = telefone
         self.isFornecedor = isFornecedor
-        self.cadastroData = cadastroData
+        self.dataCadastro = dataCadastro
+        self.nomeFantasia = nomeFantasia
         self.numIe = numIe
         self.statusIe = statusIe
         self.endereco = endereco

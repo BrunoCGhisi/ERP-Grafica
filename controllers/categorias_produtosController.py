@@ -10,9 +10,9 @@ def Categorias_produtosController():
             categorias_produtos = Categorias_produtos(data['categoria'])
             db.session.add(categorias_produtos)
             db.session.commit()
-            return 'Categorias_produtos adicionados com sucesso!', 200
+            return "Categorias_produtos adicionados com sucesso!", 200
         except Exception as e:
-            return f'Não foi possível inserir. Erro {str(e)}', 405
+            return f"Não foi possível inserir. Erro {str(e)}", 405
         
 
     elif request.method == 'GET':
@@ -22,7 +22,7 @@ def Categorias_produtosController():
             return newData, 200
         
         except Exception as e:
-            return f'Não foi possível buscar. Erro {str(e)}', 405
+            return f"Não foi possível buscar. Erro {str(e)}", 405
         
 
     elif request.method == 'PUT':
@@ -34,7 +34,7 @@ def Categorias_produtosController():
                 if categoria_produto is None:
                     return{'error': 'categoria_produto não encontrado'}, 405
                 
-                categoria_produto.nome = data.get('categoria', categoria_produto.nome)
+                categoria_produto.categoria  = data.get('categoria', categoria_produto.categoria )
 
                 db.session.commit()
                 return "categoria_produto atualizado com sucesso", 202

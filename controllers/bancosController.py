@@ -10,9 +10,9 @@ def bancosController():
             bancos = Bancos(data['nome'], data['valorTotal'])
             db.session.add(bancos)
             db.session.commit()
-            return 'Bancos adicionados com sucesso!', 200
+            return "Bancos adicionados com sucesso!", 200
         except Exception as e:
-            return f'Não foi possível inserir. Erro {str(e)}', 405
+            return f"Não foi possível inserir. Erro {str(e)}", 405
         
 
     elif request.method == 'GET':
