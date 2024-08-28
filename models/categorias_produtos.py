@@ -1,6 +1,6 @@
 from database.db import db
 
-class Produtos_categorias(db.Model): #criando representações das tabelas do bancp (db.Model) 
+class Categorias_produtos(db.Model): #criando representações das tabelas do bancp (db.Model) 
     def to_dict(self): #to_dict transforma database rows em dicioinarios
         return{
             'id': self.id,

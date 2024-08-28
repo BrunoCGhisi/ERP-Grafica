@@ -19,13 +19,13 @@ class Produtos(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False, unique= True)
     tipo = db.Column(db.Boolean, nullable=False)
     keyWord = db.Column(db.String)
-    idCategoria = db.Column(ForeignKey('produtos_categorias.id'))
+    idCategoria = db.Column(ForeignKey('categorias_produtos.id'))
     precoVenda = db.Column(db.Float, nullable=False)
     isEstoque = db.Column(db.Boolean, nullable=False) #if estoque true, minEstoque e estoque nullable=false
     minEstoque = db.Column(db.Integer)
     estoque = db.Column(db.Float)
 
-    categoria = relationship('Produtos_categorias', backref='produtos')
+    categoria = relationship('Categorias_produtos', backref='produtos')
 
     def __init__(self, tipo, keyWord, idCategoria, precoVenda, isEstoque, minEstoque, estoque):
         self.tipo = tipo
