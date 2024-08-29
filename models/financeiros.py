@@ -15,7 +15,7 @@ class Financeiros(db.Model):
             'dataPagamento': self.dataPagamento,
             'idCliente': self.idCliente,
             'idBanco': self.idBanco,
-            'idFormaPgto': self.formaPgto,
+            'idFormaPgto': self.idFormaPgto,
             'situacao': self.situacao
             }
 
@@ -37,7 +37,7 @@ class Financeiros(db.Model):
     banco = relationship('Bancos', backref='financeiros')
     forma_pgto = relationship('Formas_pgto', backref='financeiros')
 
-    def __init__(self, descricao, idVenda, isPagarReceber, valor, dataVencimento, dataCompetencia, dataPagamento, idCliente, idBanco, formaPgto, situacao):
+    def __init__(self, descricao, idVenda, isPagarReceber, valor, dataVencimento, dataCompetencia, dataPagamento, idCliente, idBanco, idFormaPgto, situacao):
         self.descricao = descricao
         self.idVenda = idVenda
         self.isPagarReceber = isPagarReceber
@@ -47,5 +47,5 @@ class Financeiros(db.Model):
         self.dataPagamento = dataPagamento
         self.idCliente = idCliente
         self.idBanco = idBanco
-        self.formaPgto = formaPgto
+        self.idFormaPgto = idFormaPgto
         self.situacao = situacao

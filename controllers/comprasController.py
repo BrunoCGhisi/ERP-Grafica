@@ -8,6 +8,9 @@ def comprasController():
         try:
             data = request.get_json() # converte em python
             compras = Compras(data['idFornecedor'], data['isCompraOs'], data['dataCompra'], data['numNota'], data['desconto'])
+
+            #IMPLEMENTAR LOGICA IF CLIENTE IS NOT FORNECEDOR IDFORNECEDOR NÃO PODE RECEBER ID 
+
             db.session.add(compras)
             db.session.commit()
             return 'Compras adicionados com sucesso!', 200

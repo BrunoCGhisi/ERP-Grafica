@@ -1,6 +1,7 @@
 from flask import request
 from database.db import db
 from models.usuarios import Usuarios
+from werkzeug.security import generate_password_hash, check_password_hash
 
 def usuariosController():
 
@@ -37,7 +38,7 @@ def usuariosController():
                 
                 usuario.nome = data.get('nome', usuario.nome)
                 usuario.email = data.get('email', usuario.email)   
-                usuario.senha = data.get('senha', usuario.senha)   
+                usuario.senha = generate_password_hash(data.get('senha'))
                 usuario.isAdm = data.get('isAdm', usuario.isAdm)   
 
                 db.session.commit()
