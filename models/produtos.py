@@ -7,6 +7,7 @@ class Produtos(db.Model):
     def to_dict(self):
         return{
             'id': self.id,
+            'nome': self.nome,
             'tipo': self.tipo, #serviço ou produto
             'keyWord': self.keyWord,
             'idCategoria': self.idCategoria,
@@ -17,17 +18,19 @@ class Produtos(db.Model):
         }
     
     id = db.Column(db.Integer, primary_key=True, nullable=False, unique= True)
+    nome = db.Column(db.String(60), nullable=False)
     tipo = db.Column(db.Boolean, nullable=False)
-    keyWord = db.Column(db.String)
-    idCategoria = db.Column(ForeignKey('categorias_produtos.id'))
+    keyWord = db.Column(db.String, nullable=True)
+    idCategoria = db.Column(ForeignKey('categorias_produtos.id'), nullable=False)
     preco = db.Column(db.Float, nullable=False)
     isEstoque = db.Column(db.Boolean, nullable=False) #if estoque true, minEstoque e estoque nullable=false
-    minEstoque = db.Column(db.Integer)
-    estoque = db.Column(db.Float)
+    minEstoque = db.Column(db.Integer, nullable=False)
+    estoque = db.Column(db.Float, nullable=False)
 
     categoria = relationship('Categorias_produtos', backref='produtos')
 
-    def __init__(self, tipo, keyWord, idCategoria, preco, isEstoque, minEstoque, estoque):
+    def __init__(self, nome, tipo, keyWord, idCategoria, preco, isEstoque, minEstoque, estoque):
+        self.nome = nome
         self.tipo = tipo
         self.keyWord = keyWord
         self.idCategoria = idCategoria

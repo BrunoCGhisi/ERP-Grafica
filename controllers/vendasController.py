@@ -1,14 +1,34 @@
 from flask import request
 from database.db import db
 from models.vendas import Vendas
+from models.vendas_produtos import Vendas_produtos
 
 def vendasController():
 
     if request.method == 'POST':
         try:
             data = request.get_json() # converte em python
-            vendas = Vendas(data['idCliente'], data['idVendedor'], data['data'], data['isVendaOs'], data['situacao'], data['totalVenda'], data['desconto'])
+            
+            vendas = Vendas(data['idCliente'], data['idVendedor'], data['data'], data['isVendaOS'], data['situacao'], data['totalVenda'], data['desconto'])
+            
+            dataProdutos = data.get('vendas_produtos', [])
+
             db.session.add(vendas)
+            db.session.flush() # para conseguir pegar id
+            
+            for dataP in dataProdutos:
+                idP = dataP['idProduto']
+                preco = dataP['preco']
+                quantidade = dataP['quantidade']
+                tamanho = dataP['tamanho']
+                print(preco)
+
+                vendas_produtos = Vendas_produtos(vendas.id, idP, preco, quantidade, tamanho)
+                db.session.add(vendas_produtos)
+           
+            
+            
+            
             db.session.commit()
             return 'Vendas adicionados com sucesso!', 200
         except Exception as e:
@@ -38,7 +58,7 @@ def vendasController():
                 venda.idCliente = data.get('idCliente', venda.idCliente)
                 venda.idVendedor = data.get('idVendedor', venda.idVendedor)   
                 venda.data = data.get('data', venda.data)   
-                venda.isVendaOs = data.get('isVendaOs', venda.isVendaOs)   
+                venda.isVendaOS = data.get('isVendaOS', venda.isVendaOs)   
                 venda.situacao = data.get('situacao', venda.situacao)
                 venda.totalVenda = data.get('totalVenda', venda.totalVenda)   
                 venda.desconto = data.get('desconto', venda.desconto)

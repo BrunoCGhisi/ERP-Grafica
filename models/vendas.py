@@ -9,7 +9,7 @@ class Vendas(db.Model):
             'idCliente': self.idCliente, #serviço ou produto
             'idVendedor': self.idVendedor,
             'data': self.data,
-            'isVendaOs': self.isVendaOs, #conferir
+            'isVendaOS': self.isVendaOS, #conferir
             'situacao': self.situacao,
             'totalVenda': self.totalVenda,
             'desconto': self.desconto #conferir
@@ -19,7 +19,7 @@ class Vendas(db.Model):
     idCliente = db.Column(ForeignKey('clientes.id'), nullable=False)
     idVendedor = db.Column(ForeignKey('usuarios.id'), nullable=False)
     data = db.Column(db.Date, nullable=False)
-    isVendaOs = db.Column(db.Integer, nullable=False)
+    isVendaOS = db.Column(db.Integer, nullable=False)
     situacao = db.Column(db.Date, nullable=False)
     totalVenda = db.Column(db.Integer, nullable=False)
     desconto = db.Column(db.Integer, nullable=True)
@@ -27,11 +27,11 @@ class Vendas(db.Model):
     cliente = relationship('Clientes', backref='vendas')
     usuario = relationship('Usuarios', backref='vendas')
 
-    def __init__(self, idCliente, idVendedor, data, isVendaOs, situacao, totalVenda, desconto):
+    def __init__(self, idCliente, idVendedor, data, isVendaOS, situacao, totalVenda, desconto):
         self.idCliente = idCliente
         self.idVendedor = idVendedor
         self.data = data
-        self.isVendaOs = isVendaOs
+        self.isVendaOS = isVendaOS
         self.situacao = situacao
         self.totalVenda = totalVenda
         self.desconto = desconto
