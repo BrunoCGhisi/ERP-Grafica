@@ -1,0 +1,30 @@
+EXEMPLO VENDAS CONTROLLER GET:
+from sqlalchemy import or_
+
+# ... (resto do seu código)
+
+elif request.method == 'GET':
+    try:
+        # Busca por ID (opcional)
+        compra_id = request.args.get('id')
+
+        # Construindo a query
+        query = Compras.query
+
+        if compra_id:
+            query = query.filter_by(id=compra_id)
+
+        # Adicionando relacionamento com Venda_produto (se existir)
+        # Assumindo que o relacionamento é chamado 'venda_produtos'
+        query = query.options(joinedload(Compras.venda_produtos))
+
+        # Executando a query e convertendo para dicionários
+        data = query.all()
+        newData = {'compras': [compra.to_dict() for compra in data]}
+
+        return newData, 200
+
+    except sqlalchemy.exc.OperationalError as e:
+        return f'Erro de conexão com o banco de dados: {str(e)}', 500
+    except Exception as e:
+        return f'Erro inesperado: {str(e)}', 500

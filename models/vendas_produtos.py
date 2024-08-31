@@ -11,7 +11,6 @@ class Vendas_produtos(db.Model):
             'preco': self.preco,
             'quantidade': self.quantidade,
             'tamanho': self.tamanho,
-            'total': self.total
         }
     
     id = db.Column(db.Integer, primary_key=True, nullable=False)

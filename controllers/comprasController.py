@@ -1,17 +1,30 @@
 from flask import request
 from database.db import db
 from models.compras import Compras
+from models.compras_produtos import Compras_produtos
 
 def comprasController():
 
     if request.method == 'POST':
         try:
             data = request.get_json() # converte em python
+            
+            #Perguntar pro belone se eu preciso fazer a parte de verificar quem é forncedor no back ou se eu só filtro isso no front-end
+
             compras = Compras(data['idFornecedor'], data['isCompraOs'], data['dataCompra'], data['numNota'], data['desconto'])
-
-            #IMPLEMENTAR LOGICA IF CLIENTE IS NOT FORNECEDOR IDFORNECEDOR NÃO PODE RECEBER ID 
-
             db.session.add(compras)
+            db.session.flush()
+            
+            dataCompra = data.get('compras_produtos', [])
+
+            for dataC in dataCompra:
+                idProduto = dataC['idProduto']
+                preco = dataC['preco']
+                quantidade = dataC['quantidade']
+                tamanho = dataC['tamanho']
+                compras_produtos = Compras_produtos(compras.id, idProduto, preco, quantidade, tamanho)
+                db.session.add(compras_produtos)
+
             db.session.commit()
             return 'Compras adicionados com sucesso!', 200
         except Exception as e:

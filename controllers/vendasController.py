@@ -9,7 +9,7 @@ def vendasController():
         try:
             data = request.get_json() # converte em python
             
-            vendas = Vendas(data['idCliente'], data['idVendedor'], data['data'], data['isVendaOS'], data['situacao'], data['totalVenda'], data['desconto'])
+            vendas = Vendas(data['idCliente'], data['idVendedor'], data['data'], data['isVendaOS'], data['situacao'], data['desconto'])
             
             dataProdutos = data.get('vendas_produtos', [])
 
@@ -21,13 +21,9 @@ def vendasController():
                 preco = dataP['preco']
                 quantidade = dataP['quantidade']
                 tamanho = dataP['tamanho']
-                print(preco)
 
                 vendas_produtos = Vendas_produtos(vendas.id, idP, preco, quantidade, tamanho)
                 db.session.add(vendas_produtos)
-           
-            
-            
             
             db.session.commit()
             return 'Vendas adicionados com sucesso!', 200
@@ -37,9 +33,61 @@ def vendasController():
 
     elif request.method == 'GET':
         try:
-            data = Vendas.query.all()
-            newData = {'vendas': [venda.to_dict() for venda in data]} #pegando cada obj venda, e tranformando num dicionario
-            return newData, 200
+            dataVendas = Vendas.query.all()
+            dataVendas_produtos = Vendas_produtos.query.all()
+            newDataVendas = {'vendas': [venda.to_dict() for venda in dataVendas]}
+            newDataVendas_produtos = {'vendas_produtos': [venda_produto.to_dict() for venda_produto in dataVendas_produtos]} #pegando cada obj venda, e tranformando num dicionario
+
+           # datas = [[newDataVendas],[newDataVendas_produtos]]
+            data = "ei"
+
+            idVenda = []
+            fkVenda = []
+
+            for produto in newDataVendas_produtos['vendas_produtos']:
+                fkVenda.append(produto['idVenda']) 
+
+            for venda in newDataVendas['vendas']:
+                idVenda.append(venda['id'])
+
+                for item in idVenda:
+                    for fk in fkVenda:
+                        if fk == item:
+
+                            print(fk, item)
+
+            # for produto in newDataVendas_produtos['vendas_produtos']:
+            #     fkVenda.append(produto['id']) 
+            # for venda in newDataVendas['vendas']:
+            #     idVenda.append(venda['id'])
+            #     for idv in idVenda:
+            #         item = idVenda[idv]
+            #         for fk in fkVenda:
+            #             if fkVenda[fk] == item:
+            #                 print(fkVenda, item)
+                    
+            # for i in newDataVendas:
+            #     dataDic = newDataVendas[i]
+                
+            #     for x in dataDic:
+            #         idVenda = x['id']
+
+            # print(newDataVendas['vendas'])
+                    
+
+
+
+
+            # newDataVendas = {'vendas': [],[]}
+            # for venda in dataVendas:
+            #     newDataVendas['vendas'].append(venda.to_dict())
+
+          
+
+
+
+            
+            return data, 200
         
         except Exception as e:
             return f'Não foi possível buscar. Erro {str(e)}', 405
@@ -60,7 +108,6 @@ def vendasController():
                 venda.data = data.get('data', venda.data)   
                 venda.isVendaOS = data.get('isVendaOS', venda.isVendaOs)   
                 venda.situacao = data.get('situacao', venda.situacao)
-                venda.totalVenda = data.get('totalVenda', venda.totalVenda)   
                 venda.desconto = data.get('desconto', venda.desconto)
 
                 db.session.commit()
@@ -74,6 +121,9 @@ def vendasController():
         try:
             id = request.args.to_dict().get('id') #pega o id dos dados que o data trouxe do front
             venda = Vendas.query.get(id) # vai procurar vendas NO BANCO com esse id
+
+
+
 
             if venda is None:
                 return{'error': 'venda não encontrado'}, 405
