@@ -11,7 +11,7 @@ def comprasController():
             
             #Perguntar pro belone se eu preciso fazer a parte de verificar quem é forncedor no back ou se eu só filtro isso no front-end
 
-            compras = Compras(data['idFornecedor'], data['isCompraOs'], data['dataCompra'], data['numNota'], data['desconto'])
+            compras = Compras(data['idFornecedor'], data['isCompraOS'], data['dataCompra'], data['numNota'], data['desconto'])
             db.session.add(compras)
             db.session.flush()
             
@@ -52,7 +52,7 @@ def comprasController():
                     return{'error': 'compra não encontrado'}, 405
                 
                 compra.idFornecedor = data.get('idFornecedor', compra.idFornecedor)
-                compra.isCompraOs = data.get('isCompraOs', compra.isCompraOs)   
+                compra.isCompraOS = data.get('isCompraOS', compra.isCompraOS)   
                 compra.dataCompra = data.get('dataCompra', compra.dataCompra)   
                 compra.numNota = data.get('numNota', compra.numNota)   
                 compra.desconto = data.get('desconto', compra.desconto)
@@ -68,6 +68,15 @@ def comprasController():
         try:
             id = request.args.to_dict().get('id') #pega o id dos dados que o data trouxe do front
             compra = Compras.query.get(id) # vai procurar compras NO BANCO com esse id
+
+            dataCompras_produtos = Compras_produtos.query.all()
+            newDataCompras_produtos = {'compras_produtos': [compra_produto.to_dict() for compra_produto in dataCompras_produtos]} #pegando cada obj venda, e tranformando num dicionario
+            
+            for produto in newDataCompras_produtos['compras_produtos']:
+                if int(produto['idCompra']) == int(id):
+                    prodObj = Compras_produtos.query.get(produto['id'])
+                    db.session.delete(prodObj)
+
 
             if compra is None:
                 return{'error': 'compra não encontrado'}, 405
