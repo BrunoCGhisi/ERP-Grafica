@@ -1,6 +1,7 @@
 from flask import request
 from database.db import db
 from models.compras import Compras
+from models.produtos import Produtos
 from models.compras_produtos import Compras_produtos
 
 def comprasController():
@@ -11,6 +12,9 @@ def comprasController():
             
             #Perguntar pro belone se eu preciso fazer a parte de verificar quem é forncedor no back ou se eu só filtro isso no front-end
 
+            produtos = Produtos.query.all()
+            dataProdutos = {'produtos': [produto.to_dict() for produto in produtos]} #pegando cada obj venda, e tranformando num dicionario
+
             compras = Compras(data['idFornecedor'], data['isCompraOS'], data['dataCompra'], data['numNota'], data['desconto'])
             db.session.add(compras)
             db.session.flush()
@@ -19,11 +23,19 @@ def comprasController():
 
             for dataC in dataCompra:
                 idProduto = dataC['idProduto']
+                for prodId in dataProdutos['produtos']:
+                    if dataC['idProduto'] == prodId['id']:
+                        estoqueUpdate = dataC['quantidade'] + prodId[estoqueUpdate]
+                        produtos = Produtos(prodId['nome', prodId['tipo'], prodId['keyWord'], prodId['idCategoria'], prodId['preco'], prodId['isEstoque'], prodId['minEstoque'], estoqueUpdate])
+
                 preco = dataC['preco']
                 quantidade = dataC['quantidade']
                 tamanho = dataC['tamanho']
                 compras_produtos = Compras_produtos(compras.id, idProduto, preco, quantidade, tamanho)
                 db.session.add(compras_produtos)
+
+                # if idProduto == produtos[id], estoque += quantidade
+
 
             db.session.commit()
             return 'Compras adicionados com sucesso!', 200

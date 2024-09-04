@@ -20,8 +20,18 @@ def clientesController():
     elif request.method == 'GET':
         try:
             data = Clientes.query.all()
-            newData = {'clientes': [cliente.to_dict() for cliente in data]} #pegando cada obj cliente, e tranformando num dicionario
+            newData = {'clientes': [cliente.to_dict() for cliente in data], 'clientesComFornecedore': []} #pegando cada obj cliente, e tranformando num dicionario
             return newData, 200
+        # {
+        #     'clientesComFornecedores':{},
+        #     ''
+        # }
+
+        # for cliente in data:
+        #     if cliente is fornecedor = true:
+                
+        #     cliente_dict = cliente.to_dict()  # Converte o cliente para um dicionário
+        #     clientes_dict.append(cliente_dict) 
         
         except Exception as e:
             return f'Não foi possível buscar. Erro {str(e)}', 405

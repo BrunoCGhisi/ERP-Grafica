@@ -2,7 +2,7 @@ from flask import request
 from database.db import db
 from models.vendas import Vendas
 from models.vendas_produtos import Vendas_produtos
-
+from models.produtos import Produtos
 def vendasController():
 
     if request.method == 'POST':
@@ -67,21 +67,25 @@ def vendasController():
                 id = request.args.to_dict().get('id')
                 venda = Vendas.query.get(id)
                 data = request.get_json() #pega todos os dados
-
-                dataVendas_produtos = Vendas_produtos.query.all()
-                newDataVendas_produtos = {'vendas_produtos': [venda_produto.to_dict() for venda_produto in dataVendas_produtos]} #pegando cada obj venda, e tranformando num dicionario
+                # dataVendas_produtos = Vendas_produtos.query.all()
+                dataVendas_produtos = data.get('vendas_produtos', [])
+                #newDataVendas_produtos = {'vendas_produtos': [venda_produto.to_dict() for venda_produto in data['vendas_produtos']]} #pegando cada obj venda, e tranformando num dicionario
                 
 
-                for produto in newDataVendas_produtos['vendas_produtos']:
-                    if int(produto['idVenda']) == int(id):
-                        prodObj = Vendas_produtos.query.get(produto['id'])# acessa o objetoc com esse id, e não o id necessáriamente
-                        print("no if")
-                        print(prodObj)
-                        prodObj.idProduto = data.get('idProduto', prodObj.idProduto)
-                        print(prodObj.idProduto)
-                        prodObj.preco = data.get('preco', prodObj.preco)
-                        prodObj.quantidade = data.get('quantidade', prodObj.quantidade)  
-                        prodObj.tamanho = data.get('tamanho', prodObj.tamanho) 
+                for produto in dataVendas_produtos:
+                    print(produto)
+                    vendas_produtos = Vendas_produtos.query.filter(Vendas_produtos.idVenda == id).all()
+                    print(vendas_produtos)
+                    
+                    if vendas_produtos:
+                        print("OOOOLOKO")
+                        for produto in vendas_produtos:
+                            
+                            produto.idProduto = dataVendas_produtos.get('idProduto', produto.idProduto)
+                            produto.quantidade = dataVendas_produtos.get('quantidade', produto.quantidade)                            
+                            db.session.commit()  
+                    else:
+                        return {'error': 'Product not found'}, 500
 
                 if venda is None:
                     return{'error': 'venda não encontrado'}, 405
@@ -98,7 +102,7 @@ def vendasController():
                 return "venda atualizado com sucesso", 202
 
             except Exception as e:
-                return f"Não foi possível atualizar o venda. Erro:{str(e)}", 405
+                return f"Não foi possível atualizar a venda. Erro:{str(e)}", 405
             
 
     elif request.method == 'DELETE':
@@ -111,8 +115,8 @@ def vendasController():
             
             for produto in newDataVendas_produtos['vendas_produtos']:
                 if int(produto['idVenda']) == int(id):
-                    prodObj = Vendas_produtos.query.get(produto['id'])
-                    db.session.delete(prodObj)
+                    vendas_produtos = Vendas_produtos.query.get(produto['id'])
+                    db.session.delete(vendas_produtos)
 
             if venda is None:
                 return{'error': 'venda não encontrado'}, 405
