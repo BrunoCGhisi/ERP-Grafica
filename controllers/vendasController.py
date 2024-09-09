@@ -18,11 +18,8 @@ def vendasController():
             
             for dataP in dataProdutos:
                 idP = dataP['idProduto']
-                preco = dataP['preco']
                 quantidade = dataP['quantidade']
-                tamanho = dataP['tamanho']
-
-                vendas_produtos = Vendas_produtos(vendas.id, idP, preco, quantidade, tamanho)
+                vendas_produtos = Vendas_produtos(vendas.id, idP, quantidade)
                 db.session.add(vendas_produtos)
             
             db.session.commit()
@@ -66,26 +63,26 @@ def vendasController():
             try:
                 id = request.args.to_dict().get('id')
                 venda = Vendas.query.get(id)
-                data = request.get_json() #pega todos os dados
-                # dataVendas_produtos = Vendas_produtos.query.all()
-                dataVendas_produtos = data.get('vendas_produtos', [])
-                #newDataVendas_produtos = {'vendas_produtos': [venda_produto.to_dict() for venda_produto in data['vendas_produtos']]} #pegando cada obj venda, e tranformando num dicionario
-                
+                data = request.get_json() #pega todos os dados 
+                dataVendas_produtos = data.get('vendas_produtos', []) #preciso pegar os ID's disso aqui, passa no json           
 
                 for produto in dataVendas_produtos:
-                    print(produto)
+                    id_vp = produto.get('id')
+                    #print("produto", produto)
                     vendas_produtos = Vendas_produtos.query.filter(Vendas_produtos.idVenda == id).all()
-                    print(vendas_produtos)
-                    
-                    if vendas_produtos:
-                        print("OOOOLOKO")
-                        for produto in vendas_produtos:
-                            
-                            produto.idProduto = dataVendas_produtos.get('idProduto', produto.idProduto)
-                            produto.quantidade = dataVendas_produtos.get('quantidade', produto.quantidade)                            
+                    #print(vendas_produtos)
+                    #print(len(vendas_produtos))
+                        
+                    for produto_vp in vendas_produtos:
+                        
+                        #print(id_vp)
+                        #print(produto_vp.id)
+                        if produto_vp.id == id_vp:
+                            #print("OOOOLOKO")
+                            produto_vp.idProduto = produto.get('idProduto')
+                            produto_vp.quantidade = produto.get('quantidade')                       
                             db.session.commit()  
-                    else:
-                        return {'error': 'Product not found'}, 500
+                
 
                 if venda is None:
                     return{'error': 'venda não encontrado'}, 405

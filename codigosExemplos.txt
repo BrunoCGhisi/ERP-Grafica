@@ -28,3 +28,24 @@ elif request.method == 'GET':
         return f'Erro de conexão com o banco de dados: {str(e)}', 500
     except Exception as e:
         return f'Erro inesperado: {str(e)}', 500
+
+----------------------------------------------------------
+
+PUT EM VENDAS 
+
+dataVendas_produtos = data.get('vendas_produtos', [])  # Presumindo que isso é uma lista de dicionários
+
+for produto_dados in dataVendas_produtos:
+    idProduto = produto_dados.get('idProduto')
+    quantidade = produto_dados.get('quantidade')
+
+    if idProduto is not None and quantidade is not None:
+        vendas_produtos = Vendas_produtos.query.filter(Vendas_produtos.idVenda == id).all()
+
+        for produto in vendas_produtos:
+            if produto.idProduto == idProduto:
+                produto.quantidade = quantidade
+                db.session.commit()
+                break  # Supondo que `idProduto` é único, saímos do loop após encontrar o produto
+    else:
+        print("Dados inválidos para produto:", produto_dados)
