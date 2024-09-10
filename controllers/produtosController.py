@@ -7,7 +7,7 @@ def produtosController():
     if request.method == 'POST':
         try:
             data = request.get_json() # converte em python
-            produtos = Produtos(data['nome'], data['tipo'], data['keyWord'], data['idCategoria'], data['preco'], data['isEstoque'], data['minEstoque'], data['estoque'])
+            produtos = Produtos(data['nome'], data['tipo'], data['keyWord'], data['idCategoria'], data['preco'], data['tamanho'], data['isEstoque'], data['minEstoque'], data['estoque'])
             db.session.add(produtos)
             db.session.commit()
             return 'Produtos adicionados com sucesso!', 200
@@ -39,7 +39,8 @@ def produtosController():
                 produto.tipo = data.get('tipo', produto.tipo)
                 produto.keyWord = data.get('keyWord', produto.keyWord)   
                 produto.idCategoria = data.get('idCategoria', produto.idCategoria)   
-                produto.preco = data.get('preco', produto.preco)   
+                produto.preco = data.get('preco', produto.preco)
+                produto.tamanho = data.get('tamanho', produto.tamanho)    
                 produto.isEstoque = data.get('isEstoque', produto.isEstoque)
                 produto.minEstoque = data.get('minEstoque', produto.minEstoque)   
                 produto.estoque = data.get('estoque', produto.estoque)   
