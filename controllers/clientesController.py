@@ -1,13 +1,14 @@
 from flask import request
 from database.db import db
 from models.clientes import Clientes
+from datetime import date, timedelta, datetime
 
 def clientesController():
 
     if request.method == 'POST':
         try:
             data = request.get_json() # converte em python
-            clientes = Clientes(data['nome'], data['cpfCnpj'], data['email'], data['telefone'], data['isFornecedor'], data['dataCadastro'], data['nomeFantasia'], data['numIe'], data['statusIe'], data['endereco'], data['cep'], data['estado'], data['numero'], data['cidade'], data['complemento'])
+            clientes = Clientes(data['nome'], data['cpfCnpj'], data['email'], data['telefone'], data['isFornecedor'], date.today(), data['nomeFantasia'], data['numIe'], data['statusIe'], data['endereco'], data['cep'], data['estado'], data['numero'], data['cidade'], data['complemento'])
 
             db.session.add(clientes)
             db.session.commit()
@@ -53,7 +54,6 @@ def clientesController():
                 cliente.email = data.get('email', cliente.email)   
                 cliente.telefone = data.get('telefone', cliente.telefone)
                 cliente.isFornecedor = data.get('isFornecedor', cliente.isFornecedor)   
-                cliente.dataCadastro = data.get('dataCadastro', cliente.dataCadastro)
                 cliente.numIe = data.get('numIe', cliente.numIe)   
                 cliente.statusIe = data.get('statusIe', cliente.statusIe)   
                 cliente.endereco = data.get('endereco', cliente.endereco)
