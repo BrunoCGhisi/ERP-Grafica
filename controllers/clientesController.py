@@ -8,7 +8,8 @@ def clientesController():
     if request.method == 'POST':
         try:
             data = request.get_json() # converte em python
-            clientes = Clientes(data['nome'], data['cpfCnpj'], data['email'], data['telefone'], data['isFornecedor'], date.today(), data['nomeFantasia'], data['numIe'], data['statusIe'], data['endereco'], data['cep'], data['estado'], data['numero'], data['cidade'], data['complemento'])
+            print(data)
+            clientes = Clientes(data['nome'], data['cpfCnpj'], data['email'], data['telefone'], data['isFornecedor'], data['nomeFantasia'], data['numIe'], data['statusIe'], data['endereco'], data['cep'], data['estado'], data['numero'], data['cidade'], data['complemento'])
 
             db.session.add(clientes)
             db.session.commit()
