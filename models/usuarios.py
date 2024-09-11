@@ -25,5 +25,7 @@ class Usuarios(db.Model):
 
     def verify_senha(self, senhas):
         return check_password_hash(self.senha, senhas)
+    
+
 
         
