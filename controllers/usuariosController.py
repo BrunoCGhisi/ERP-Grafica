@@ -60,8 +60,6 @@ def usuariosController():
             db.session.delete(usuario)
             db.session.commit()
             return "Usuário deletado com sucesso", 202
-
+    
         except Exception as e:
             return f"Não foi possível apagar o usuário. Erro:{str(e)}", 405
-        
-
