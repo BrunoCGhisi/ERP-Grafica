@@ -2,9 +2,10 @@ from flask import request
 from database.db import db
 from models.usuarios import Usuarios
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_jwt_extended import jwt_required, get_jwt_identity  # Import JWT requirements
 
 def usuariosController():
-
+        
     if request.method == 'POST':
         try:
             data = request.get_json() # converte em python
@@ -15,7 +16,7 @@ def usuariosController():
         except Exception as e:
             return f'Não foi possível inserir. Erro {str(e)}', 405
         
-
+    
     elif request.method == 'GET':
         try:
             data = Usuarios.query.all()
@@ -59,8 +60,6 @@ def usuariosController():
             db.session.delete(usuario)
             db.session.commit()
             return "Usuário deletado com sucesso", 202
-
+    
         except Exception as e:
             return f"Não foi possível apagar o usuário. Erro:{str(e)}", 405
-        
-

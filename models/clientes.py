@@ -1,4 +1,9 @@
 from database.db import db 
+from datetime import datetime, timezone
+
+def aware_utcnow():
+    return datetime.now(timezone.utc)
+
 
 class Clientes(db.Model):
     def to_dict(self):
@@ -28,7 +33,7 @@ class Clientes(db.Model):
     email = db.Column(db.String, nullable=False)
     telefone = db.Column(db.String, nullable=False)
     isFornecedor = db.Column(db.Boolean, nullable=False)
-    dataCadastro = db.Column(db.Date, nullable=False)
+    dataCadastro = db.Column(db.Date, nullable=False, default=aware_utcnow())
     numIe = db.Column(db.Integer, nullable=True)
     statusIe = db.Column(db.Boolean, nullable=True)
     endereco = db.Column(db.String, nullable=True)
@@ -38,13 +43,12 @@ class Clientes(db.Model):
     cidade = db.Column(db.String, nullable=True)
     complemento = db.Column(db.String, nullable=True)
 
-    def __init__(self, nome, cpfCnpj, email, telefone, isFornecedor, dataCadastro, nomeFantasia, numIe, statusIe, endereco, cep, estado, numero, cidade, complemento):
+    def __init__(self, nome, cpfCnpj, email, telefone, isFornecedor, nomeFantasia, numIe, statusIe, endereco, cep, estado, numero, cidade, complemento):
         self.nome = nome
         self.cpfCnpj = cpfCnpj
         self.email = email
         self.telefone = telefone
         self.isFornecedor = isFornecedor
-        self.dataCadastro = dataCadastro
         self.nomeFantasia = nomeFantasia
         self.numIe = numIe
         self.statusIe = statusIe

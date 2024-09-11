@@ -1,24 +1,21 @@
-from flask import request
+from flask import request, jsonify
 from models.usuarios import Usuarios
-from werkzeug.security import check_password_hash
+from flask_jwt_extended import create_access_token
 
 def login():
-    if request.method == 'POST':
-        data = request.get_json()  # Assumindo que os dados são enviados em JSON
-        email = data.get('email').strip().lower()
-        senha = data.get('senha')
-        
+    data = request.get_json()
 
-        usuario = Usuarios.query.filter_by(email=email).first()
+    if not data or not data.get('email') or not data.get('senha'):
+        return jsonify({"msg": "Email e senha são obrigatórios"}), 400
 
-        if usuario is None:
-            return{'error': 'Usuário não encontrado'}, 405
-        else:
-            if check_password_hash(usuario.senha, str(senha)) == True:
-                return "Autenticação bem-sucedida"
-            else:
-                return "Senha incorreta"
+    # Busca o usuário pelo email
+    usuario = Usuarios.query.filter_by(email=data['email']).first()
 
-    else:
-        return "Método HTTP inválido"
-    
+    # Verifica se o usuário existe e se a senha corresponde ao hash armazenado
+    if usuario and usuario.verify_senha(data['senha']):
+        # Gera o token JWT com o ID do usuário como identidade
+        access_token = create_access_token(identity=usuario.id)
+        return jsonify(access_token=access_token), 200
+
+    return jsonify({"msg": "Credenciais inválidas"}), 401
+
