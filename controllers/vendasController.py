@@ -56,8 +56,7 @@ def vendasController():
             return getVendas, 200
         
         except Exception as e:
-            return f'Não foi possível buscar. Erro {str(e)}', 405
-        
+            return f'Não foi possível buscar. Erro {str(e)}', 405    
 
     elif request.method == 'PUT':
             try:
