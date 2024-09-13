@@ -11,6 +11,7 @@ class Compras(db.Model):
             'dataCompra': self.dataCompra,
             'numNota': self.numNota, #conferir
             'desconto': self.desconto,
+            'isOpen': self.isOpen
         }
     
     id = db.Column(db.Integer, primary_key=True, nullable=False)
@@ -19,13 +20,15 @@ class Compras(db.Model):
     dataCompra = db.Column(db.Date, nullable=False)
     numNota = db.Column(db.Integer, nullable=False)
     desconto = db.Column(db.Integer, nullable=True)
+    isOpen = db.Column(db.Boolean, nullable=True)
 
     fornecedor = relationship('Clientes', backref='compras')
 
-    def __init__(self, idFornecedor, isCompraOS, dataCompra, numNota, desconto):
+    def __init__(self, idFornecedor, isCompraOS, dataCompra, numNota, desconto, isOpen):
         self.idFornecedor = idFornecedor
         self.isCompraOS = isCompraOS
         self.dataCompra = dataCompra
         self.numNota = numNota
         self.desconto = desconto
+        self.isOpen = isOpen
 

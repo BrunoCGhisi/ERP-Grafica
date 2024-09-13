@@ -8,6 +8,7 @@ from routes.formas_pgtoRoutes import formas_pgtoRoutes
 from routes.categorias_produtosRoutes import categorias_produtosRoutes
 from routes.produtosRoutes import produtosRoutes
 from routes.vendasRoutes import vendasRoutes
+from routes.insumosRoutes import insumosRoutes
 
 def routeIndex(app):
     usuariosRoutes(app)
@@ -20,3 +21,4 @@ def routeIndex(app):
     categorias_produtosRoutes(app)
     produtosRoutes(app)
     vendasRoutes(app)
+    insumosRoutes(app)

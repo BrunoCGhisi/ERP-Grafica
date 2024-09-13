@@ -16,7 +16,8 @@ class Financeiros(db.Model):
             'idCliente': self.idCliente,
             'idBanco': self.idBanco,
             'idFormaPgto': self.idFormaPgto,
-            'situacao': self.situacao
+            'situacao': self.situacao,
+            'isOpen': self.isOpen
             }
 
     id = db.Column(db.Integer, primary_key = True, nullable=False)
@@ -31,13 +32,14 @@ class Financeiros(db.Model):
     idBanco = db.Column(ForeignKey('bancos.id'), nullable=False)
     idFormaPgto = db.Column(ForeignKey('formas_pgto.id'), nullable=False)
     situacao = db.Column(db.Integer, nullable=False)
+    isOpen = db.Column(db.Boolean, nullable=True)
 
     venda = relationship('Vendas', backref='financeiros')
     cliente = relationship('Clientes', backref='financeiros')
     banco = relationship('Bancos', backref='financeiros')
     forma_pgto = relationship('Formas_pgto', backref='financeiros')
 
-    def __init__(self, descricao, idVenda, isPagarReceber, valor, dataVencimento, dataCompetencia, dataPagamento, idCliente, idBanco, idFormaPgto, situacao):
+    def __init__(self, descricao, idVenda, isPagarReceber, valor, dataVencimento, dataCompetencia, dataPagamento, idCliente, idBanco, idFormaPgto, situacao, isOpen):
         self.descricao = descricao
         self.idVenda = idVenda
         self.isPagarReceber = isPagarReceber
@@ -49,3 +51,4 @@ class Financeiros(db.Model):
         self.idBanco = idBanco
         self.idFormaPgto = idFormaPgto
         self.situacao = situacao
+        self.isOpen = isOpen
