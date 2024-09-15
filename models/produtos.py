@@ -25,11 +25,10 @@ class Produtos(db.Model):
     preco = db.Column(db.Float, nullable=False)
     tamanho = db.Column(db.Float, nullable=False)
 
-
     categoria = relationship('Categorias_produtos', backref='produtos')
     insumo = relationship('Insumos', backref='produtos')
 
-    def __init__(self, nome, tipo, keyWord, idCategoria, idInsumo, preco, tamanho):
+    def __init__(self, nome, tipo, keyWord, idInsumo, idCategoria, preco, tamanho):
         self.nome = nome
         self.tipo = tipo
         self.keyWord = keyWord

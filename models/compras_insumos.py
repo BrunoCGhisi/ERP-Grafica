@@ -2,12 +2,12 @@ from database.db import db
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 
-class Compras_produtos(db.Model):
+class Compras_insumos(db.Model):
     def to_dict(self):
         return{
             'id': self.id,
             'idCompra': self.idCompra, 
-            'idProduto': self.idProduto,
+            'idInsumo': self.idInsumo,
             'preco': self.preco,
             'quantidade': self.quantidade,
             'tamanho': self.tamanho,
@@ -16,17 +16,17 @@ class Compras_produtos(db.Model):
     
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     idCompra = db.Column(ForeignKey("compras.id"), nullable=False)
-    idProduto = db.Column(ForeignKey("produtos.id"), nullable=False)
+    idInsumo = db.Column(ForeignKey("insumos.id"), nullable=False)
     preco = db.Column(db.Float, nullable=False)
     quantidade = db.Column(db.Integer, nullable=False)
     tamanho = db.Column(db.Float, nullable=False)
 
-    produtos = relationship('Produtos', backref='compras_produtos')
-    compras = relationship('Compras', backref='compras_produtos')
+    insumos = relationship('Insumos', backref='compras_insumos')
+    compras = relationship('Compras', backref='compras_insumos')
 
-    def __init__(self, idCompra, idProduto, preco, quantidade, tamanho):
+    def __init__(self, idCompra, idInsumo, preco, quantidade, tamanho):
         self.idCompra = idCompra
-        self.idProduto = idProduto
+        self.idInsumo = idInsumo
         self.preco = preco
         self.quantidade = quantidade
         self.tamanho = tamanho

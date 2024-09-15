@@ -49,3 +49,42 @@ for produto_dados in dataVendas_produtos:
                 break  # Supondo que `idProduto` é único, saímos do loop após encontrar o produto
     else:
         print("Dados inválidos para produto:", produto_dados)
+
+# --- criar insumo caso ele não exista----------------------------------------------------
+
+    if request.method == 'POST':
+        try:
+            data = request.get_json() # converte em python
+            
+            #Perguntar pro belone se eu preciso fazer a parte de verificar quem é forncedor no back ou se eu só filtro isso no front-end
+
+            compras = Compras(data['idFornecedor'], data['isCompraOS'], data['dataCompra'], data['numNota'], data['desconto'], data['isOpen'])
+            compras_insumos = data.get('compras_insumos', [])
+
+            db.session.add(compras)
+            db.session.flush()
+
+            for compra in compras_insumos:
+                print("cheguei here")
+                idInsumo = compra['idInsumo']
+                allInsumos = Insumos.query.filter(Insumos.id == idInsumo).all()
+                if len(allInsumos) == 0:
+                    nome = compra['idInsumo']
+                    estoque = compra['quantidade']
+                    isActive = 1
+                    postInsumo = Insumos(nome, estoque, isActive)
+                    db.session.add(postInsumo)
+                    db.session.flush()
+                else:
+                    preco = compra['preco']
+                    quantidade = compra['quantidade']
+                    tamanho = compra['tamanho']
+
+                postComprasInsumos = Compras_insumos(compras.id, idInsumo, preco, quantidade, tamanho)
+                db.session.add(postComprasInsumos)
+
+            db.session.commit()
+            return 'Compras adicionados com sucesso!', 200
+        except Exception as e:
+            return f'Não foi possível inserir. Erro {str(e)}', 405
+        

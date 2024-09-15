@@ -1,8 +1,8 @@
 from flask import request
 from database.db import db
 from models.compras import Compras
-from models.produtos import Produtos
-from models.compras_produtos import Compras_produtos
+from models.insumos import Insumos
+from models.compras_insumos import Compras_insumos
 
 def comprasController():
 
@@ -12,30 +12,33 @@ def comprasController():
             
             #Perguntar pro belone se eu preciso fazer a parte de verificar quem é forncedor no back ou se eu só filtro isso no front-end
 
-            produtos = Produtos.query.all()
-            dataProdutos = {'produtos': [produto.to_dict() for produto in produtos]} #pegando cada obj venda, e tranformando num dicionario
+            compras = Compras(data['idFornecedor'], data['isCompraOS'], data['dataCompra'], data['numNota'], data['desconto'], data['isOpen'])
+            compras_insumos = data.get('compras_insumos', [])
 
-            compras = Compras(data['idFornecedor'], data['isCompraOS'], data['dataCompra'], data['numNota'], data['desconto'])
             db.session.add(compras)
             db.session.flush()
-            
-            dataCompra = data.get('compras_produtos', [])
 
-            for dataC in dataCompra:
-                idProduto = dataC['idProduto']
-                for prodId in dataProdutos['produtos']:
-                    if dataC['idProduto'] == prodId['id']:
-                        estoqueUpdate = dataC['quantidade'] + prodId[estoqueUpdate]
-                        produtos = Produtos(prodId['nome', prodId['tipo'], prodId['keyWord'], prodId['idCategoria'], prodId['preco'], prodId['isEstoque'], prodId['minEstoque'], estoqueUpdate])
+            for compra in compras_insumos:
+                print("cheguei here")
+                idInsumo = compra['idInsumo']
+                allInsumos = Insumos.query.filter(Insumos.id == idInsumo).all()
+                if len(allInsumos) == 0:
+                    nome = compra['idInsumo']
+                    estoque = compra['quantidade']
+                    isActive = 1
+                    postInsumo = Insumos(nome, estoque, isActive)
+                    db.session.add(postInsumo)
+                    db.session.flush()
+                    postComprasInsumos = Compras_insumos(compras.id, postInsumo.id, compra['preco'], compra['quantidade'], compra['tamanho'])
+                    db.session.add(postComprasInsumos)
 
-                preco = dataC['preco']
-                quantidade = dataC['quantidade']
-                tamanho = dataC['tamanho']
-                compras_produtos = Compras_produtos(compras.id, idProduto, preco, quantidade, tamanho)
-                db.session.add(compras_produtos)
+                else:
+                    preco = compra['preco']
+                    quantidade = compra['quantidade']
+                    tamanho = compra['tamanho']
 
-                # if idProduto == produtos[id], estoque += quantidade
-
+                    postComprasInsumos = Compras_insumos(compras.id, idInsumo, preco, quantidade, tamanho)
+                    db.session.add(postComprasInsumos)
 
             db.session.commit()
             return 'Compras adicionados com sucesso!', 200
@@ -81,12 +84,12 @@ def comprasController():
             id = request.args.to_dict().get('id') #pega o id dos dados que o data trouxe do front
             compra = Compras.query.get(id) # vai procurar compras NO BANCO com esse id
 
-            dataCompras_produtos = Compras_produtos.query.all()
-            newDataCompras_produtos = {'compras_produtos': [compra_produto.to_dict() for compra_produto in dataCompras_produtos]} #pegando cada obj venda, e tranformando num dicionario
+            dataCompras_insumos = Compras_insumos.query.all()
+            newDataCompras_insumos = {'compras_insumos': [compra_produto.to_dict() for compra_produto in dataCompras_insumos]} #pegando cada obj venda, e tranformando num dicionario
             
-            for produto in newDataCompras_produtos['compras_produtos']:
+            for produto in newDataCompras_insumos['compras_insumos']:
                 if int(produto['idCompra']) == int(id):
-                    prodObj = Compras_produtos.query.get(produto['id'])
+                    prodObj = Compras_insumos.query.get(produto['id'])
                     db.session.delete(prodObj)
 
 

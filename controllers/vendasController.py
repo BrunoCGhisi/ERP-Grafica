@@ -3,24 +3,25 @@ from database.db import db
 from models.vendas import Vendas
 from models.vendas_produtos import Vendas_produtos
 from models.produtos import Produtos
+from models.insumos import Insumos
+
 def vendasController():
 
     if request.method == 'POST':
         try:
+
             data = request.get_json() # converte em python
-            
             vendas = Vendas(data['idCliente'], data['idVendedor'], data['data'], data['isVendaOS'], data['situacao'], data['desconto'])
-            
-            dataProdutos = data.get('vendas_produtos', [])
+            vendas_produtos = data.get('vendas_produtos', [])
 
             db.session.add(vendas)
             db.session.flush() # para conseguir pegar id
             
-            for dataP in dataProdutos:
-                idP = dataP['idProduto']
-                quantidade = dataP['quantidade']
-                vendas_produtos = Vendas_produtos(vendas.id, idP, quantidade)
-                db.session.add(vendas_produtos)
+            for objVp in vendas_produtos:
+                idProduto = objVp['idProduto']
+                quantidade = objVp['quantidade']
+                postVendasProdutos = Vendas_produtos(vendas.id, idProduto, quantidade)
+                db.session.add(postVendasProdutos)
             
             db.session.commit()
             return 'Vendas adicionados com sucesso!', 200
@@ -35,20 +36,19 @@ def vendasController():
             newDataVendas = {'vendas': [venda.to_dict() for venda in dataVendas]}
             newDataVendas_produtos = {'vendas_produtos': [venda_produto.to_dict() for venda_produto in dataVendas_produtos]} #pegando cada obj venda, e tranformando num dicionario
 
-
             idVenda = []
             fkVenda = []
 
-            for produto in newDataVendas_produtos['vendas_produtos']:
-                fkVenda.append(produto['idVenda']) 
+            for venda_produto in newDataVendas_produtos['vendas_produtos']:
+                fkVenda.append(venda_produto['idVenda']) 
 
             for venda in newDataVendas['vendas']:
                 idVenda.append(venda['id'])
 
-                for item in idVenda:
-                    for fk in fkVenda:
-                        if fk == item:
-                            getVendas = {'vendas':[[venda.to_dict() for venda in dataVendas],[produto.to_dict() for produto in dataVendas_produtos]]}
+                for idV in idVenda:
+                    for fkV in fkVenda:
+                        if fkV == idV:
+                            getVendas = {'vendas':[[venda.to_dict() for venda in dataVendas],[venda_produto.to_dict() for venda_produto in dataVendas_produtos]]}
                         else:
                             getVendas = {'vendas':[venda.to_dict() for venda in dataVendas]}
 
@@ -65,8 +65,8 @@ def vendasController():
                 data = request.get_json() #pega todos os dados 
                 dataVendas_produtos = data.get('vendas_produtos', []) #preciso pegar os ID's disso aqui, passa no json           
 
-                for produto in dataVendas_produtos:
-                    id_vp = produto.get('id')
+                for venda_produto in dataVendas_produtos:
+                    id_vp = venda_produto.get('id')
                     #print("produto", produto)
                     vendas_produtos = Vendas_produtos.query.filter(Vendas_produtos.idVenda == id).all()
                     #print(vendas_produtos)
@@ -91,6 +91,32 @@ def vendasController():
                 venda.data = data.get('data', venda.data)   
                 venda.isVendaOS = data.get('isVendaOS', venda.isVendaOS)   
                 venda.situacao = data.get('situacao', venda.situacao)
+
+                if data.get('situacao', venda.situacao) == 5:
+        
+                    allVendasProd = Vendas_produtos.query.filter(Vendas_produtos.idVenda == id).all()
+                    
+                    for obj in allVendasProd:
+                    
+                        idProduto = obj.idProduto
+                        quantidade = obj.quantidade
+
+                        dataProd = Produtos.query.get(idProduto)
+                        print("nome: ",dataProd.nome)
+                        print("insumo: ",dataProd.idInsumo)
+                        print("tamanho: ",dataProd.tamanho)
+                        print("quant:",quantidade)
+                        print(20*"-")
+
+                        dataInsumo = Insumos.query.get(dataProd.idInsumo)
+                        desc = quantidade * dataProd.tamanho
+                        print(desc)
+                        dataInsumo.estoque = dataInsumo.estoque - desc
+                        
+                    print(allVendasProd)
+                    
+                    print("estoque vai mudar")
+                
                 venda.desconto = data.get('desconto', venda.desconto)
      
                 db.session.commit()
