@@ -3,7 +3,7 @@ from database.db import db
 from models.bancos import Bancos
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
-@jwt_required()  # Protege a rota com JWT
+
 def bancosController():
     if request.method == 'POST':
         try:
