@@ -3,6 +3,7 @@ from database.db import db
 from routes.routeIndex import routeIndex
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager  
+from datetime import timedelta
 
 
 class MyServer(): #classe que inicializa e guarda o funcionamento do flask
@@ -10,7 +11,9 @@ class MyServer(): #classe que inicializa e guarda o funcionamento do flask
         self.app = Flask(__name__) #obj de flask que estamos importando
         CORS(self.app)
         self.app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:''@localhost/artfox' #configurações especificas do ambiente que vamos usar
-        self.app.config['JWT_SECRET_KEY'] = 'MinhaKeyMtFoda'  # Chave para JWT
+        self.app.config['JWT_SECRET_KEY'] = 'MinhaKeyCabulosa'  # Chave para JWT
+        self.app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(minutes=1)
+        self.app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=30)
         db.init_app(self.app) #inicializa o flask para usar com a extensão (mysqalchemy )
         routeIndex(self.app) 
         
