@@ -14,10 +14,8 @@ def login():
     # Verifica se o usuário existe e se a senha corresponde ao hash armazenado
     if usuario and usuario.verify_senha(data['senha']):
         # Gera o token JWT com o ID do usuário como identidade
-        additional_claims = {"userId": usuario.id}
+        additional_claims = {"userId": usuario.id, "nome": usuario.nome}
         access_token = create_access_token(identity=usuario.id, additional_claims=additional_claims)
         return jsonify(access_token=access_token), 200
 
     return jsonify({"msg": "Credenciais inválidas"}), 401
-
-
