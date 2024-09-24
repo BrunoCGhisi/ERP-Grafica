@@ -5,7 +5,6 @@ from flask_cors import CORS
 from flask_jwt_extended import JWTManager  
 from datetime import timedelta
 
-
 class MyServer(): #classe que inicializa e guarda o funcionamento do flask
     def __init__(self) -> None:
         self.app = Flask(__name__) #obj de flask que estamos importando
