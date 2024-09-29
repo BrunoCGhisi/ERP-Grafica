@@ -4,6 +4,7 @@ from models.compras import Compras
 from models.insumos import Insumos
 from models.compras_insumos import Compras_insumos
 
+
 def comprasController():
 
     if request.method == 'POST':
@@ -19,7 +20,7 @@ def comprasController():
             db.session.flush()
 
             for compra in compras_insumos:
-                print("cheguei here")
+                
                 idInsumo = compra['idInsumo']
                 allInsumos = Insumos.query.filter(Insumos.id == idInsumo).all()
                 if len(allInsumos) == 0:

@@ -3,6 +3,22 @@ from database.db import db
 from models.clientes import Clientes
 from datetime import date, timedelta, datetime
 
+def getFornecedores():
+    if request.method == 'GET':
+        try:
+            fornecedores = []
+            data = Clientes.query.all()
+            newData = {'compras': [compra.to_dict() for compra in data]} #pegando cada obj compra, e tranformando num dicionario
+            
+            for cliente in newData['compras']:
+                if cliente['isFornecedor'] == 1:
+                    fornecedores.append(cliente)
+            
+            return fornecedores, 200
+        
+        except Exception as e:
+            return f'Não foi possível buscar idFornecedor. Erro {str(e)}', 405
+
 def clientesController():
 
     if request.method == 'POST':
@@ -24,16 +40,7 @@ def clientesController():
             data = Clientes.query.all()
             newData = {'clientes': [cliente.to_dict() for cliente in data], 'clientesComFornecedore': []} #pegando cada obj cliente, e tranformando num dicionario
             return newData, 200
-        # {
-        #     'clientesComFornecedores':{},
-        #     ''
-        # }
 
-        # for cliente in data:
-        #     if cliente is fornecedor = true:
-                
-        #     cliente_dict = cliente.to_dict()  # Converte o cliente para um dicionário
-        #     clientes_dict.append(cliente_dict) 
         
         except Exception as e:
             return f'Não foi possível buscar. Erro {str(e)}', 405
