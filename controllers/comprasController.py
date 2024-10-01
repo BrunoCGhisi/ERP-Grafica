@@ -12,7 +12,6 @@ def comprasController():
             data = request.get_json() # converte em python
             
             #Perguntar pro belone se eu preciso fazer a parte de verificar quem é forncedor no back ou se eu só filtro isso no front-end
-            print("POSTPOSTPOSTPOST", data)
             compras = Compras(data['idFornecedor'], data['isCompraOS'], data['dataCompra'], data['numNota'], data['desconto'], data['isOpen'])
             compras_insumos = data.get('compras_insumos', [])
 
@@ -50,9 +49,7 @@ def comprasController():
     elif request.method == 'GET':
         try:
             data = Compras.query.all()
-            print("GETGETGETGETGET", data)
             newData = {'compras': [compra.to_dict() for compra in data]} #pegando cada obj compra, e tranformando num dicionario
-            print("GETGETGETGETGET", newData)
             return newData, 200
         
         except Exception as e:
@@ -64,6 +61,7 @@ def comprasController():
                 id = request.args.to_dict().get('id')
                 compra = Compras.query.get(id)
                 data = request.get_json() #pega todos os dados
+                print("PUTPUYPUT", data)
 
                 
                 if compra is None:
@@ -74,6 +72,7 @@ def comprasController():
                 compra.dataCompra = data.get('dataCompra', compra.dataCompra)   
                 compra.numNota = data.get('numNota', compra.numNota)   
                 compra.desconto = data.get('desconto', compra.desconto)
+                compra.isOpen = data.get('isOpen', compra.isOpen) 
 
                 db.session.commit()
                 return "compra atualizado com sucesso", 202
