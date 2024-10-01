@@ -12,7 +12,7 @@ def comprasController():
             data = request.get_json() # converte em python
             
             #Perguntar pro belone se eu preciso fazer a parte de verificar quem é forncedor no back ou se eu só filtro isso no front-end
-
+            print("POSTPOSTPOSTPOST", data)
             compras = Compras(data['idFornecedor'], data['isCompraOS'], data['dataCompra'], data['numNota'], data['desconto'], data['isOpen'])
             compras_insumos = data.get('compras_insumos', [])
 
@@ -50,7 +50,9 @@ def comprasController():
     elif request.method == 'GET':
         try:
             data = Compras.query.all()
+            print("GETGETGETGETGET", data)
             newData = {'compras': [compra.to_dict() for compra in data]} #pegando cada obj compra, e tranformando num dicionario
+            print("GETGETGETGETGET", newData)
             return newData, 200
         
         except Exception as e:

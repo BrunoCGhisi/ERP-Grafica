@@ -17,7 +17,7 @@ class Compras(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     idFornecedor = db.Column(ForeignKey('clientes.id'), nullable=False)
     isCompraOS = db.Column(db.Boolean, nullable=False)
-    dataCompra = db.Column(db.Date, nullable=False)
+    dataCompra = db.Column(db.String, nullable=False)
     numNota = db.Column(db.Integer, nullable=False)
     desconto = db.Column(db.Integer, nullable=True)
     isOpen = db.Column(db.Boolean, nullable=True)
