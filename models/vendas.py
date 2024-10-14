@@ -17,9 +17,9 @@ class Vendas(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     idCliente = db.Column(ForeignKey('clientes.id'), nullable=False)
     idVendedor = db.Column(ForeignKey('usuarios.id'), nullable=False)
-    data = db.Column(db.Date, nullable=False)
+    data = db.Column(db.String, nullable=False)
     isVendaOS = db.Column(db.Integer, nullable=False)
-    situacao = db.Column(db.Date, nullable=False)
+    situacao = db.Column(db.Integer, nullable=False)
     desconto = db.Column(db.Integer, nullable=True)
 
     cliente = relationship('Clientes', backref='vendas')

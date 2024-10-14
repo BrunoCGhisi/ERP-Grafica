@@ -2,6 +2,20 @@ from flask import request
 from database.db import db
 from models.categorias_produtos import Categorias_produtos
 
+def getCategorias():
+        if request.method == 'GET':
+            try:
+                categorias = []
+                data = Categorias_produtos.query.all()
+                newData = {'Categorias_produtos': [insumo.to_dict() for insumo in data]}  # pegando cada obj insumo e transformando em dicionário
+                for item in newData['Categorias_produtos']:
+                    categorias.append(item)
+                
+                return categorias, 200
+                
+            except Exception as e:
+                return f'Não foi possível buscar. Erro {str(e)}', 405
+
 def Categorias_produtosController():
 
     if request.method == 'POST':

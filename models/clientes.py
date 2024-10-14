@@ -33,7 +33,7 @@ class Clientes(db.Model):
     email = db.Column(db.String, nullable=False)
     telefone = db.Column(db.String, nullable=False)
     isFornecedor = db.Column(db.Boolean, nullable=False)
-    dataCadastro = db.Column(db.Date, nullable=False, default=aware_utcnow())
+    dataCadastro = db.Column(db.String, nullable=False)
     numIe = db.Column(db.Integer, nullable=True)
     statusIe = db.Column(db.Boolean, nullable=True)
     endereco = db.Column(db.String, nullable=True)

@@ -18,6 +18,23 @@ def getFornecedores():
         
         except Exception as e:
             return f'Não foi possível buscar idFornecedor. Erro {str(e)}', 405
+        
+
+def getClientes():
+    if request.method == 'GET':
+        try:
+            clientes = []
+            data = Clientes.query.all()
+            newData = {'cliente': [compra.to_dict() for compra in data]} #pegando cada obj compra, e tranformando num dicionario
+            
+            for cliente in newData['cliente']:
+                 clientes.append(cliente)
+            
+            return clientes, 200
+        
+        except Exception as e:
+            return f'Não foi possível buscar idFornecedor. Erro {str(e)}', 405
+
 
 def clientesController():
 

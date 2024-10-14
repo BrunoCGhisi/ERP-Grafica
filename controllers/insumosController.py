@@ -2,6 +2,22 @@ from flask import request
 from database.db import db
 from models.insumos import Insumos
 
+
+def getInsumos():
+    if request.method == 'GET':
+        try:
+            insumos = []
+            data = Insumos.query.all()
+            newData = {'insumos': [insumo.to_dict() for insumo in data]}  # pegando cada obj insumo e transformando em dicionário
+            for item in newData['insumos']:
+                insumos.append(item)
+            
+            return insumos, 200
+            
+        except Exception as e:
+            return f'Não foi possível buscar. Erro {str(e)}', 405
+
+
 def insumosController():
 
     if request.method == 'POST':
