@@ -22,6 +22,18 @@ def vendasController():
                 quantidade = objVp['quantidade']
                 postVendasProdutos = Vendas_produtos(vendas.id, idProduto, quantidade)
                 db.session.add(postVendasProdutos)
+
+
+            # FINANCEIRO --------------------------------------
+                
+            postFinanceiro = Financeiros()
+            #---------------------------------------------------
+
+
+
+
+
+
             
             db.session.commit()
             return 'Vendas adicionados com sucesso!', 200
@@ -52,7 +64,7 @@ def vendasController():
                         else:
                             getVendas = {'vendas':[venda.to_dict() for venda in dataVendas]}
 
-            
+            print(getVendas)
             return getVendas, 200
         
         except Exception as e:
@@ -92,7 +104,7 @@ def vendasController():
                 venda.isVendaOS = data.get('isVendaOS', venda.isVendaOS)   
                 venda.situacao = data.get('situacao', venda.situacao)
 
-                if data.get('situacao', venda.situacao) == 5:
+                if data.get('situacao', venda.situacao) == 4:
         
                     allVendasProd = Vendas_produtos.query.filter(Vendas_produtos.idVenda == id).all()
                     
