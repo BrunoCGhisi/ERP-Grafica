@@ -4,6 +4,8 @@ from models.vendas import Vendas
 from models.vendas_produtos import Vendas_produtos
 from models.produtos import Produtos
 from models.insumos import Insumos
+from models.financeiros import Financeiros
+from datetime import date, timedelta, datetime
 
 def vendasController():
 
@@ -16,21 +18,44 @@ def vendasController():
 
             db.session.add(vendas)
             db.session.flush() # para conseguir pegar id
-            
-            for objVp in vendas_produtos:
+            total = 0
+
+            for objVp in vendas_produtos: # Dando post em vendas_produtos
                 idProduto = objVp['idProduto']
                 quantidade = objVp['quantidade']
+                produtos = Produtos.query.filter(Produtos.id == objVp['idProduto']).all()
+                for item in produtos:
+                    total += quantidade * item.preco
+                print(total)
+
+               # valorP = produtos['valor']
+                
+                #total += valorP * quantidade
                 postVendasProdutos = Vendas_produtos(vendas.id, idProduto, quantidade)
                 db.session.add(postVendasProdutos)
 
 
-            # FINANCEIRO --------------------------------------
-                
-            postFinanceiro = Financeiros()
+            # FINANCEIRO -------------------------------------- RECEBER
+            
+            dataVencimento = vendas.data + timedelta(days=30)
+            descrição = vendas.id + 
+            postFinanceiro = Financeiros(vendas.id, vendas.idCliente, 1, total, dataVencimento, vendas.data, vendas.data, "idBanco", "IdFormaDePagar", 0, 1) 
             #---------------------------------------------------
 
 
-
+# id int AI PK 
+# idVenda int 
+# descricao varchar(45) "Venda a prazo, código 1858, parcela 1/1"
+# idCliente int 
+# isPagarReceber tinyint 
+# valor float 
+# dataVencimento date 
+# dataCompetencia date 
+# dataPagamento date 
+# idBanco int 
+# idFormaPgto int 
+# situacao int 
+# isOpen #repensar
 
 
 

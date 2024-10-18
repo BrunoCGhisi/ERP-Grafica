@@ -1,9 +1,5 @@
 from database.db import db 
-from datetime import datetime, timezone
-
-def aware_utcnow():
-    return datetime.now(timezone.utc)
-
+from datetime import datetime, timezone, date
 
 class Clientes(db.Model):
     def to_dict(self):
@@ -43,13 +39,14 @@ class Clientes(db.Model):
     cidade = db.Column(db.String, nullable=True)
     complemento = db.Column(db.String, nullable=True)
 
-    def __init__(self, nome, cpfCnpj, email, telefone, isFornecedor, nomeFantasia, numIe, statusIe, endereco, cep, estado, numero, cidade, complemento):
+    def __init__(self, nome, cpfCnpj, email, telefone, isFornecedor, nomeFantasia, dataCadastro, numIe, statusIe, endereco, cep, estado, numero, cidade, complemento):
         self.nome = nome
         self.cpfCnpj = cpfCnpj
         self.email = email
         self.telefone = telefone
         self.isFornecedor = isFornecedor
         self.nomeFantasia = nomeFantasia
+        self.dataCadastro = date.today()
         self.numIe = numIe
         self.statusIe = statusIe
         self.endereco = endereco
