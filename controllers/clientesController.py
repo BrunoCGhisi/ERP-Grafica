@@ -42,7 +42,7 @@ def clientesController():
         try:
             data = request.get_json() # converte em python
             print(data)
-            clientes = Clientes(data['nome'], data['cpfCnpj'], data['email'], data['telefone'], data['isFornecedor'], data['nomeFantasia'], data['numIe'], data['statusIe'], data['endereco'], data['cep'], data['estado'], data['numero'], data['cidade'], data['complemento'])
+            clientes = Clientes(data['nome'], data['cpfCnpj'], data['email'], data['telefone'], data['isFornecedor'], data['nomeFantasia'], date.today(),  data['numIe'], data['statusIe'], data['endereco'], data['cep'], data['estado'], data['numero'], data['cidade'], data['complemento'])
 
             db.session.add(clientes)
             db.session.commit()
@@ -80,6 +80,7 @@ def clientesController():
                 cliente.telefone = data.get('telefone', cliente.telefone)
                 cliente.isFornecedor = data.get('isFornecedor', cliente.isFornecedor)   
                 cliente.numIe = data.get('numIe', cliente.numIe)   
+                cliente.dataCadastro = data.get('dataCadastro', cliente.dataCadastro)   
                 cliente.statusIe = data.get('statusIe', cliente.statusIe)   
                 cliente.endereco = data.get('endereco', cliente.endereco)
                 cliente.cep = data.get('cep', cliente.cep)   
