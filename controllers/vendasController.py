@@ -5,7 +5,7 @@ from models.vendas_produtos import Vendas_produtos
 from models.produtos import Produtos
 from models.insumos import Insumos
 from models.financeiros import Financeiros
-from datetime import date, timedelta, datetime
+from datetime import timedelta, datetime
 
 def vendasController():
 
@@ -23,8 +23,7 @@ def vendasController():
 
             for forma in forma_pgto:
                 idFormaPgto = forma["id"] 
-            
-            print(forma_pgto)
+
 
             db.session.add(vendas)
             db.session.flush() # para conseguir pegar id
@@ -36,43 +35,18 @@ def vendasController():
                 produtos = Produtos.query.filter(Produtos.id == objVp['idProduto']).all()
                 for item in produtos:
                     total += quantidade * item.preco # calcula o valor total da venda
-                print(total)
-
-
                 postVendasProdutos = Vendas_produtos(vendas.id, idProduto, quantidade)
                 db.session.add(postVendasProdutos)
 
-
             # FINANCEIRO -------------------------------------- RECEBER
-                
-            print(type(vendas.data))
             dataVenda = datetime.strptime(vendas.data, "%Y-%m-%d").date()
             dataVencimento = dataVenda + timedelta(days=30)
             
-            print(dataVencimento)
             descricao = str(vendas.id) + str(parcelas) 
             postFinanceiro = Financeiros(descricao, vendas.id, 1, total, dataVencimento, vendas.data, vendas.data, idFormaPgto, 0, 0, parcelas)
             print(postFinanceiro)
             db.session.add(postFinanceiro)
             #---------------------------------------------------
-
-# (descricao, `idVenda`, `isPagarReceber`, valor, `dataVencimento`, `dataCompetencia`, `dataPagamento`, `idCliente`, `idBanco`, `idFormaPgto`, situacao, parcelas, `isOpen`)
-# id int AI PK 
-# idVenda int 
-# descricao varchar(45) "Venda a prazo, código 1858, parcela 1/1"
-# idCliente int 
-# isPagarReceber tinyint 
-# valor float 
-# dataVencimento date 
-# dataCompetencia date 
-# dataPagamento date 
-# idBanco int 
-# idFormaPgto int 
-# situacao int 
-# isOpen #repensar
-
-
-
             
             db.session.commit()
             return 'Vendas adicionados com sucesso!', 200
