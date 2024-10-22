@@ -4,6 +4,7 @@ from models.vendas import Vendas
 from models.vendas_produtos import Vendas_produtos
 from models.produtos import Produtos
 from models.insumos import Insumos
+from models.financeiros import Financeiros
 
 def vendasController():
 
