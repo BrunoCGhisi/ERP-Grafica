@@ -15,6 +15,16 @@ def vendasController():
             data = request.get_json() # converte em python
             vendas = Vendas(data['idCliente'], data['idVendedor'], data['data'], data['isVendaOS'], data['situacao'], data['desconto'])
             vendas_produtos = data.get('vendas_produtos', [])
+            financeiro = data.get('financeiro', []) # parcelas
+            forma_pgto = data.get('forma_pgto', []) # idBanco, tipo
+
+            for fin in financeiro:
+                parcelas = fin["parcelas"] 
+
+            for forma in forma_pgto:
+                idFormaPgto = forma["id"] 
+            
+            print(forma_pgto)
 
             db.session.add(vendas)
             db.session.flush() # para conseguir pegar id
@@ -25,24 +35,28 @@ def vendasController():
                 quantidade = objVp['quantidade']
                 produtos = Produtos.query.filter(Produtos.id == objVp['idProduto']).all()
                 for item in produtos:
-                    total += quantidade * item.preco
+                    total += quantidade * item.preco # calcula o valor total da venda
                 print(total)
 
-               # valorP = produtos['valor']
-                
-                #total += valorP * quantidade
+
                 postVendasProdutos = Vendas_produtos(vendas.id, idProduto, quantidade)
                 db.session.add(postVendasProdutos)
 
 
             # FINANCEIRO -------------------------------------- RECEBER
+                
+            print(type(vendas.data))
+            dataVenda = datetime.strptime(vendas.data, "%Y-%m-%d").date()
+            dataVencimento = dataVenda + timedelta(days=30)
             
-            dataVencimento = vendas.data + timedelta(days=30)
-            descrição = vendas.id + 
-            postFinanceiro = Financeiros(vendas.id, vendas.idCliente, 1, total, dataVencimento, vendas.data, vendas.data, "idBanco", "IdFormaDePagar", 0, 1) 
+            print(dataVencimento)
+            descricao = str(vendas.id) + str(parcelas) 
+            postFinanceiro = Financeiros(descricao, vendas.id, 1, total, dataVencimento, vendas.data, vendas.data, idFormaPgto, 0, 0, parcelas)
+            print(postFinanceiro)
+            db.session.add(postFinanceiro)
             #---------------------------------------------------
 
-
+# (descricao, `idVenda`, `isPagarReceber`, valor, `dataVencimento`, `dataCompetencia`, `dataPagamento`, `idCliente`, `idBanco`, `idFormaPgto`, situacao, parcelas, `isOpen`)
 # id int AI PK 
 # idVenda int 
 # descricao varchar(45) "Venda a prazo, código 1858, parcela 1/1"

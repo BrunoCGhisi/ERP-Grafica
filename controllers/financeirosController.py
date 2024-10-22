@@ -7,7 +7,7 @@ def financeirosController():
     if request.method == 'POST':
         try:
             data = request.get_json() # converte em python
-            financeiros = Financeiros(data['descricao'], data['idVenda'], data['isPagarReceber'], data['valor'], data['dataVencimento'], data['dataCompetencia'], data['dataPagamento'], data['idCliente'], data['idBanco'], data['idFormaPgto'], data['situacao'])
+            financeiros = Financeiros(data['descricao'], data['idVenda'], data['isPagarReceber'], data['valor'], data['dataVencimento'], data['dataCompetencia'], data['dataPagamento'], data['idCliente'], data['idFormaPgto'], data['situacao'], data['isOpen'], data['parcelas'])
             db.session.add(financeiros)
             db.session.commit()
             return 'Financeiros adicionados com sucesso!', 200
@@ -41,11 +41,12 @@ def financeirosController():
                 financeiro.valor = data.get('valor', financeiro.valor)   
                 financeiro.dataVencimento = data.get('dataVencimento', financeiro.dataVencimento)
                 financeiro.dataCompetencia = data.get('dataCompetencia', financeiro.dataCompetencia)   
-                financeiro.dataPagamento = data.get('dataPagamento', financeiro.dataPagamento)   
-                financeiro.idCliente = data.get('idCliente', financeiro.idCliente)   
+                financeiro.dataPagamento = data.get('dataPagamento', financeiro.dataPagamento)     
                 financeiro.idBanco = data.get('idBanco', financeiro.idBanco)
                 financeiro.idFormaPgto = data.get('idFormaPgto', financeiro.idFormaPgto)
-                financeiro.situacao = data.get('situacao', financeiro.situacao)    
+                financeiro.situacao = data.get('situacao', financeiro.situacao)
+                financeiro.isOpen = data.get('isOpen', financeiro.isOpen)     
+                financeiro.parcelas = data.get('parcelas', financeiro.parcelas)  
 
                 db.session.commit()
                 return "financeiro atualizado com sucesso", 202
