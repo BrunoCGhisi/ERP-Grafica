@@ -30,20 +30,29 @@ def vendasController():
             total = 0
 
             for objVp in vendas_produtos: # Dando post em vendas_produtos
+                print("aqui 1")
                 idProduto = objVp['idProduto']
                 quantidade = objVp['quantidade']
+                print("aqui 2")
                 produtos = Produtos.query.filter(Produtos.id == objVp['idProduto']).all()
+                print(produtos)
                 for item in produtos:
+                    print("aqui 4")
+                    
+                    insumos = Insumos.query.filter(Insumos.id == item['idInsumo']).all()
+                    
+                    print(insumos)
+
                     total += quantidade * item.preco # calcula o valor total da venda
                 postVendasProdutos = Vendas_produtos(vendas.id, idProduto, quantidade)
                 db.session.add(postVendasProdutos)
 
             # FINANCEIRO -------------------------------------- RECEBER
-            dataVenda = datetime.strptime(vendas.data, "%Y-%m-%d").date()
+            dataVenda = datetime.strptime(vendas.dataAtual, "%Y-%m-%d").date()
             dataVencimento = dataVenda + timedelta(days=30)
             
             descricao = str(vendas.id) + str(parcelas) 
-            postFinanceiro = Financeiros(descricao, vendas.id, 1, total, dataVencimento, vendas.data, vendas.data, idFormaPgto, 0, 0, parcelas)
+            postFinanceiro = Financeiros(descricao, vendas.id, 1, total, dataVencimento, vendas.dataAtual, vendas.dataAtual, idFormaPgto, 0, 0, parcelas)
             print(postFinanceiro)
             db.session.add(postFinanceiro)
             #---------------------------------------------------
@@ -73,7 +82,7 @@ def vendasController():
                 for idV in idVenda:
                     for fkV in fkVenda:
                         if fkV == idV:
-                            getVendas = {'vendas':[[venda.to_dict() for venda in dataVendas],[venda_produto.to_dict() for venda_produto in dataVendas_produtos]]}
+                            getVendas = {'vendas':[venda.to_dict() for venda in dataVendas], 'vendas_produto': [venda_produto.to_dict() for venda_produto in dataVendas_produtos]}
                         else:
                             getVendas = {'vendas':[venda.to_dict() for venda in dataVendas]}
 
@@ -113,7 +122,7 @@ def vendasController():
                 
                 venda.idCliente = data.get('idCliente', venda.idCliente)
                 venda.idVendedor = data.get('idVendedor', venda.idVendedor)   
-                venda.data = data.get('data', venda.data)   
+                venda.dataAtual = data.get('dataAtual', venda.dataAtual)   
                 venda.isVendaOS = data.get('isVendaOS', venda.isVendaOS)   
                 venda.situacao = data.get('situacao', venda.situacao)
 
