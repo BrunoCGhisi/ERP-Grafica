@@ -12,6 +12,7 @@ def vendasController():
     if request.method == 'POST':
         try:
 
+            info = ""
             data = request.get_json() # converte em python
             vendas = Vendas(data['idCliente'], data['idVendedor'], data['dataAtual'], data['isVendaOS'], data['situacao'], data['desconto'])
             vendas_produtos = data.get('vendas_produtos', [])
@@ -30,19 +31,15 @@ def vendasController():
             total = 0
 
             for objVp in vendas_produtos: # Dando post em vendas_produtos
-                print("aqui 1")
                 idProduto = objVp['idProduto']
                 quantidade = objVp['quantidade']
-                print("aqui 2")
                 produtos = Produtos.query.filter(Produtos.id == objVp['idProduto']).all()
-                print(produtos)
                 for item in produtos:
-                    print("aqui 4")
-                    
-                    insumos = Insumos.query.filter(Insumos.id == item['idInsumo']).all()
-                    
-                    print(insumos)
-
+                    gastoEstoque = item.tamanho * quantidade
+                    insumos = Insumos.query.filter(Insumos.id == item.idInsumo).all()
+                    for ins in insumos:
+                        if ins.estoque <= gastoEstoque:
+                            info = f'{ins.nome} não possui estoque o suficiente! Reponha para produção.'
                     total += quantidade * item.preco # calcula o valor total da venda
                 postVendasProdutos = Vendas_produtos(vendas.id, idProduto, quantidade)
                 db.session.add(postVendasProdutos)
@@ -53,12 +50,14 @@ def vendasController():
             
             descricao = str(vendas.id) + str(parcelas) 
             postFinanceiro = Financeiros(descricao, vendas.id, 1, total, dataVencimento, vendas.dataAtual, vendas.dataAtual, idFormaPgto, 0, 0, parcelas)
-            print(postFinanceiro)
             db.session.add(postFinanceiro)
             #---------------------------------------------------
             
             db.session.commit()
-            return 'Vendas adicionados com sucesso!', 200
+            return {
+                "message":  'Vendas adicionados com sucesso!',
+                "info": info   
+            }, 200
         except Exception as e:
             return f'Não foi possível inserir. Erro {str(e)}', 405
         
