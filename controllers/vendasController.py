@@ -13,7 +13,7 @@ def vendasController():
         try:
 
             data = request.get_json() # converte em python
-            vendas = Vendas(data['idCliente'], data['idVendedor'], data['data'], data['isVendaOS'], data['situacao'], data['desconto'])
+            vendas = Vendas(data['idCliente'], data['idVendedor'], data['dataAtual'], data['isVendaOS'], data['situacao'], data['desconto'])
             vendas_produtos = data.get('vendas_produtos', [])
             financeiro = data.get('financeiro', []) # parcelas
             forma_pgto = data.get('forma_pgto', []) # idBanco, tipo
