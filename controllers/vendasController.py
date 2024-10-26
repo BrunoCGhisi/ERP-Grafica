@@ -48,9 +48,9 @@ def vendasController():
             dataVenda = datetime.strptime(vendas.dataAtual, "%Y-%m-%d").date()
             dataVencimento = dataVenda + timedelta(days=30)
             
-            descricao = str(vendas.id) + str(parcelas) 
-            postFinanceiro = Financeiros(descricao, vendas.id, 1, total, dataVencimento, vendas.dataAtual, vendas.dataAtual, idFormaPgto, 0, 0, parcelas)
-            db.session.add(postFinanceiro)
+            #descricao = str(vendas.id) + str(parcelas) 
+            #postFinanceiro = Financeiros(descricao, vendas.id, 1, total, dataVencimento, vendas.dataAtual, vendas.dataAtual, idFormaPgto, 0, 0, parcelas)
+            #db.session.add(postFinanceiro)
             #---------------------------------------------------
             
             db.session.commit()
@@ -81,7 +81,7 @@ def vendasController():
                 for idV in idVenda:
                     for fkV in fkVenda:
                         if fkV == idV:
-                            getVendas = {'vendas':[venda.to_dict() for venda in dataVendas], 'vendas_produto': [venda_produto.to_dict() for venda_produto in dataVendas_produtos]}
+                            getVendas = {'vendas':[venda.to_dict() for venda in dataVendas]},{ 'vendas_produto': [venda_produto.to_dict() for venda_produto in dataVendas_produtos]}
                         else:
                             getVendas = {'vendas':[venda.to_dict() for venda in dataVendas]}
 
@@ -93,6 +93,7 @@ def vendasController():
 
     elif request.method == 'PUT':
             try:
+                alert = ""
                 id = request.args.to_dict().get('id')
                 venda = Vendas.query.get(id)
                 data = request.get_json() #pega todos os dados 
@@ -123,7 +124,6 @@ def vendasController():
                 venda.idVendedor = data.get('idVendedor', venda.idVendedor)   
                 venda.dataAtual = data.get('dataAtual', venda.dataAtual)   
                 venda.isVendaOS = data.get('isVendaOS', venda.isVendaOS)   
-                venda.situacao = data.get('situacao', venda.situacao)
 
                 if data.get('situacao', venda.situacao) == 4:
         
@@ -135,6 +135,11 @@ def vendasController():
                         quantidade = obj.quantidade
 
                         dataProd = Produtos.query.get(idProduto)
+                        insumos = Insumos.query.filter(Insumos.id == dataProd.idInsumo).all()
+                        for ins in insumos:
+                            if (quantidade * dataProd.tamanho) > ins.estoque or ins.estoque == 0:
+                                return f'Estoque insuficiente para a produção do produto: {dataProd.nome} , reponha!', 200
+
                         print("nome: ",dataProd.nome)
                         print("insumo: ",dataProd.idInsumo)
                         print("tamanho: ",dataProd.tamanho)
@@ -151,6 +156,7 @@ def vendasController():
                     print("estoque vai mudar")
                 
                 venda.desconto = data.get('desconto', venda.desconto)
+                venda.situacao = data.get('situacao', venda.situacao)
      
                 db.session.commit()
 

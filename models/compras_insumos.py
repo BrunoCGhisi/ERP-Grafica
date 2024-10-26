@@ -11,7 +11,6 @@ class Compras_insumos(db.Model):
             'preco': self.preco,
             'quantidade': self.quantidade,
             'tamanho': self.tamanho,
-
         }
     
     id = db.Column(db.Integer, primary_key=True, nullable=False)
