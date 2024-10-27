@@ -13,7 +13,6 @@ class Financeiros(db.Model):
             'dataVencimento': self.dataVencimento,
             'dataCompetencia': self.dataCompetencia,
             'dataPagamento': self.dataPagamento,
-            'idBanco': self.idBanco,
             'idFormaPgto': self.idFormaPgto,
             'situacao': self.situacao,
             'isOpen': self.isOpen,

@@ -17,7 +17,7 @@ def vendasController():
             vendas = Vendas(data['idCliente'], data['idVendedor'], data['dataAtual'], data['isVendaOS'], data['situacao'], data['desconto'])
             vendas_produtos = data.get('vendas_produtos', [])
             financeiro = data.get('financeiro', []) # parcelas
-            forma_pgto = data.get('forma_pgto', []) # idBanco, tipo
+            forma_pgto = data.get('forma_pgto', []) # id
 
             for fin in financeiro:
                 parcelas = fin["parcelas"] 
@@ -47,10 +47,12 @@ def vendasController():
             # FINANCEIRO -------------------------------------- RECEBER
             dataVenda = datetime.strptime(vendas.dataAtual, "%Y-%m-%d").date()
             dataVencimento = dataVenda + timedelta(days=30)
-            
-            #descricao = str(vendas.id) + str(parcelas) 
-            #postFinanceiro = Financeiros(descricao, vendas.id, 1, total, dataVencimento, vendas.dataAtual, vendas.dataAtual, idFormaPgto, 0, 0, parcelas)
-            #db.session.add(postFinanceiro)
+            if parcelas > 0:
+                descricao = "Venda: " + str(vendas.id)+ ", " + "Parcelas: " + str(parcelas) 
+            else:
+                descricao = "Venda: " + str(vendas.id)+ ", " + "À vista."
+            postFinanceiro = Financeiros(descricao, vendas.id, 1, total, dataVencimento, vendas.dataAtual, vendas.dataAtual, idFormaPgto, 0, 0, parcelas)
+            db.session.add(postFinanceiro)
             #---------------------------------------------------
             
             db.session.commit()
@@ -71,6 +73,7 @@ def vendasController():
 
             idVenda = []
             fkVenda = []
+            getVendasP = {"vendas_produto": []}
 
             for venda_produto in newDataVendas_produtos['vendas_produtos']:
                 fkVenda.append(venda_produto['idVenda']) 
@@ -81,12 +84,15 @@ def vendasController():
                 for idV in idVenda:
                     for fkV in fkVenda:
                         if fkV == idV:
-                            getVendas = {'vendas':[venda.to_dict() for venda in dataVendas]},{ 'vendas_produto': [venda_produto.to_dict() for venda_produto in dataVendas_produtos]}
+                            getVendas = {'vendas':[venda.to_dict() for venda in dataVendas]}
+                            getVendasP = { 'vendas_produto': [venda_produto.to_dict() for venda_produto in dataVendas_produtos]}
                         else:
                             getVendas = {'vendas':[venda.to_dict() for venda in dataVendas]}
-
-            print(getVendas)
-            return getVendas, 200
+    
+            return {
+                "Vendas": getVendas,
+                "V_P": getVendasP
+            }, 200
         
         except Exception as e:
             return f'Não foi possível buscar. Erro {str(e)}', 405    
@@ -140,11 +146,11 @@ def vendasController():
                             if (quantidade * dataProd.tamanho) > ins.estoque or ins.estoque == 0:
                                 return f'Estoque insuficiente para a produção do produto: {dataProd.nome} , reponha!', 200
 
-                        print("nome: ",dataProd.nome)
-                        print("insumo: ",dataProd.idInsumo)
-                        print("tamanho: ",dataProd.tamanho)
-                        print("quant:",quantidade)
-                        print(20*"-")
+                        # print("nome: ",dataProd.nome)
+                        # print("insumo: ",dataProd.idInsumo)
+                        # print("tamanho: ",dataProd.tamanho)
+                        # print("quant:",quantidade)
+                        # print(20*"-")
 
                         dataInsumo = Insumos.query.get(dataProd.idInsumo)
                         desc = quantidade * dataProd.tamanho
