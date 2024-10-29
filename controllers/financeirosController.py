@@ -7,7 +7,7 @@ def financeirosController():
     if request.method == 'POST':
         try:
             data = request.get_json() # converte em python
-            financeiros = Financeiros(data['descricao'], data['idVenda'], data['isPagarReceber'], data['valor'], data['dataVencimento'], data['dataCompetencia'], data['dataPagamento'], data['idCliente'], data['idFormaPgto'], data['situacao'], data['isOpen'], data['parcelas'])
+            financeiros = Financeiros(data['descricao'], data['idVenda'], data['isPagarReceber'], data['valor'], data['dataVencimento'], data['dataCompetencia'], data['dataPagamento'], data['idFormaPgto'], data['situacao'], data['isOpen'], data['parcelas'])
             db.session.add(financeiros)
             db.session.commit()
             return 'Financeiros adicionados com sucesso!', 200
@@ -35,14 +35,12 @@ def financeirosController():
                 if financeiro is None:
                     return{'error': 'financeiro não encontrado'}, 405
                 
-                financeiro.descricao = data.get('descricao', financeiro.descricao)
-                financeiro.idVenda = data.get('idVenda', financeiro.idVenda)   
+                #financeiro.descricao = data.get('descricao', financeiro.descricao)
                 financeiro.isPagarReceber = data.get('isPagarReceber', financeiro.isPagarReceber)   
-                financeiro.valor = data.get('valor', financeiro.valor)   
+                # financeiro.valor = data.get('valor', financeiro.valor)   
                 financeiro.dataVencimento = data.get('dataVencimento', financeiro.dataVencimento)
                 financeiro.dataCompetencia = data.get('dataCompetencia', financeiro.dataCompetencia)   
                 financeiro.dataPagamento = data.get('dataPagamento', financeiro.dataPagamento)     
-                financeiro.idBanco = data.get('idBanco', financeiro.idBanco)
                 financeiro.idFormaPgto = data.get('idFormaPgto', financeiro.idFormaPgto)
                 financeiro.situacao = data.get('situacao', financeiro.situacao)
                 financeiro.isOpen = data.get('isOpen', financeiro.isOpen)     
