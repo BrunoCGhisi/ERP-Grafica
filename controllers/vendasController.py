@@ -84,14 +84,14 @@ def vendasController():
                 for idV in idVenda:
                     for fkV in fkVenda:
                         if fkV == idV:
-                            getVendas = {'vendas':[venda.to_dict() for venda in dataVendas]}
-                            getVendasP = { 'vendas_produto': [venda_produto.to_dict() for venda_produto in dataVendas_produtos]}
+                            getVendas = [venda.to_dict() for venda in dataVendas]
+                            getVendasP =[venda_produto.to_dict() for venda_produto in dataVendas_produtos]
                         else:
-                            getVendas = {'vendas':[venda.to_dict() for venda in dataVendas]}
+                            getVendas = [venda.to_dict() for venda in dataVendas]
     
             return {
-                "Vendas": getVendas,
-                "V_P": getVendasP
+                "vendas": getVendas,
+                "vendas_produtos": getVendasP
             }, 200
         
         except Exception as e:
