@@ -44,7 +44,7 @@ def financeirosController():
                 financeiro.idFormaPgto = data.get('idFormaPgto', financeiro.idFormaPgto)
                 financeiro.situacao = data.get('situacao', financeiro.situacao)
                 financeiro.isOpen = data.get('isOpen', financeiro.isOpen)     
-                # financeiro.parcelas = data.get('parcelas', financeiro.parcelas)  
+                financeiro.parcelas = data.get('parcelas', financeiro.parcelas)  
 
                 db.session.commit()
                 return "financeiro atualizado com sucesso", 202

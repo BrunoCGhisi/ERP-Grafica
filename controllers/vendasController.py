@@ -99,7 +99,6 @@ def vendasController():
 
     elif request.method == 'PUT':
             try:
-                alert = ""
                 id = request.args.to_dict().get('id')
                 venda = Vendas.query.get(id)
                 data = request.get_json() #pega todos os dados 
