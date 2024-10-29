@@ -16,15 +16,8 @@ def vendasController():
             data = request.get_json() # converte em python
             vendas = Vendas(data['idCliente'], data['idVendedor'], data['dataAtual'], data['isVendaOS'], data['situacao'], data['desconto'])
             vendas_produtos = data.get('vendas_produtos', [])
-            financeiro = data.get('financeiro', []) # parcelas
-            forma_pgto = data.get('forma_pgto', []) # id
-
-            for fin in financeiro:
-                parcelas = fin["parcelas"] 
-
-            for forma in forma_pgto:
-                idFormaPgto = forma["id"] 
-
+            parcelas = data.get('parcelas', []) # parcelas
+            forma_pgto = data.get('idForma_pgto', []) # id
 
             db.session.add(vendas)
             db.session.flush() # para conseguir pegar id
@@ -48,10 +41,11 @@ def vendasController():
             dataVenda = datetime.strptime(vendas.dataAtual, "%Y-%m-%d").date()
             dataVencimento = dataVenda + timedelta(days=30)
             if parcelas > 0:
-                descricao = "Venda: " + str(vendas.id)+ ", " + "Parcelas: " + str(parcelas) 
+                descricao = "Venda: " + str(vendas.id)+ ", " + "Parcelas: " + str(parcelas) ,
+            
             else:
                 descricao = "Venda: " + str(vendas.id)+ ", " + "À vista."
-            postFinanceiro = Financeiros(descricao, vendas.id, 1, total, dataVencimento, vendas.dataAtual, vendas.dataAtual, idFormaPgto, 0, 0, parcelas)
+            postFinanceiro = Financeiros(descricao, vendas.id, 1, total, dataVencimento, vendas.dataAtual, vendas.dataAtual, forma_pgto, 0, 0, parcelas)
             db.session.add(postFinanceiro)
             #---------------------------------------------------
             

@@ -29,7 +29,7 @@ class Financeiros(db.Model):
     dataPagamento = db.Column(db.Date, nullable=True)
     idFormaPgto = db.Column(ForeignKey('formas_pgto.id'), nullable=False)
     situacao = db.Column(db.Integer, nullable=False)
-    parcelas = db.Column(db.Integer, nullable=False)
+    parcelas = db.Column(db.Integer, nullable=False, default=1)
     isOpen = db.Column(db.Boolean, nullable=True)
 
     venda = relationship('Vendas', backref='financeiros')
