@@ -2,6 +2,22 @@ from flask import request
 from database.db import db
 from models.produtos import Produtos
 
+
+def getProdutos():
+    if request.method == 'GET':
+        try:
+            produtos = []
+            data = Produtos.query.all()
+            newData = {'produtos': [produto.to_dict() for produto in data]}  # pegando cada obj produto e transformando em dicionário
+            for item in newData['produtos']:
+                produtos.append(item)
+                print(produtos)
+            return produtos, 200
+            
+            
+        except Exception as e:
+            return f'Não foi possível buscar. Erro {str(e)}', 405
+
 def produtosController():
 
     if request.method == 'POST':

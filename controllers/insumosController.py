@@ -2,7 +2,6 @@ from flask import request
 from database.db import db
 from models.insumos import Insumos
 
-
 def getInsumos():
     if request.method == 'GET':
         try:
