@@ -40,11 +40,10 @@ def vendasController():
             # FINANCEIRO -------------------------------------- RECEBER
             dataVenda = datetime.strptime(vendas.dataAtual, "%Y-%m-%d").date()
             dataVencimento = dataVenda + timedelta(days=30)
-            if parcelas > 0:
-                descricao = "Venda: " + str(vendas.id)+ ", " + "Parcelas: " + str(parcelas) ,
-            
+            if forma_pgto == 1 or forma_pgto == 2 or forma_pgto == 4:
+                descricao = "Venda: " + str(vendas.id)+ ", " + "À vista."       
             else:
-                descricao = "Venda: " + str(vendas.id)+ ", " + "À vista."
+                descricao = "Venda: " + str(vendas.id)+ ", " + "Parcelas: " + str(parcelas) ,
             postFinanceiro = Financeiros(descricao, vendas.id, 1, total, dataVencimento, vendas.dataAtual, vendas.dataAtual, forma_pgto, 0, 0, parcelas)
             db.session.add(postFinanceiro)
             #---------------------------------------------------
@@ -167,16 +166,16 @@ def vendasController():
 
     elif request.method == 'DELETE':
         try:
-            id = request.args.to_dict().get('id') #pega o id dos dados que o data trouxe do front
+            id = int(request.args.to_dict().get('id')) #pega o id dos dados que o data trouxe do front
             venda = Vendas.query.get(id) # vai procurar vendas NO BANCO com esse id
 
-            dataVendas_produtos = Vendas_produtos.query.all()
-            newDataVendas_produtos = {'vendas_produtos': [venda_produto.to_dict() for venda_produto in dataVendas_produtos]} #pegando cada obj venda, e tranformando num dicionario
+            # dataVendas_produtos = Vendas_produtos.query.all()
+            # newDataVendas_produtos = {'vendas_produtos': [venda_produto.to_dict() for venda_produto in dataVendas_produtos]} #pegando cada obj venda, e tranformando num dicionario
             
-            for produto in newDataVendas_produtos['vendas_produtos']:
-                if int(produto['idVenda']) == int(id):
-                    vendas_produtos = Vendas_produtos.query.get(produto['id'])
-                    db.session.delete(vendas_produtos)
+            # for produto in newDataVendas_produtos['vendas_produtos']:
+            #     if int(produto['idVenda']) == int(id):
+            #         vendas_produtos = Vendas_produtos.query.get(produto['id'])
+            #         db.session.delete(vendas_produtos)
 
             if venda is None:
                 return{'error': 'venda não encontrado'}, 405

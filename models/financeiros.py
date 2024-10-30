@@ -32,7 +32,7 @@ class Financeiros(db.Model):
     parcelas = db.Column(db.Integer, nullable=False, default=1)
     isOpen = db.Column(db.Boolean, nullable=True)
 
-    venda = relationship('Vendas', backref='financeiros')
+    venda = relationship('Vendas', backref='financeiros',cascade="all, delete")
     forma_pgto = relationship('Formas_pgto', backref='financeiros')
 
     def __init__(self, descricao, idVenda, isPagarReceber, valor, dataVencimento, dataCompetencia, dataPagamento, idFormaPgto, situacao, isOpen, parcelas):
