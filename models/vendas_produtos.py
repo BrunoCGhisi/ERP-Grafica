@@ -14,7 +14,7 @@ class Vendas_produtos(db.Model):
     idVenda = db.Column(ForeignKey("vendas.id", ondelete='CASCADE'), nullable=False)
     idProduto = db.Column(ForeignKey("produtos.id"), nullable=False)
     quantidade = db.Column(db.Integer, nullable=False)
-    venda = relationship('Vendas', backref='vendas_produtos', passive_deletes=True)
+    venda = relationship('Vendas', cascade="all,delete", backref='vendas_produtos', passive_deletes=True)
     produto = relationship('Produtos', backref='vendas_produtos')
 
     def __init__(self, idVenda, idProduto, quantidade):

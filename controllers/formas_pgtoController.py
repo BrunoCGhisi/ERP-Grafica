@@ -19,6 +19,7 @@ def formas_pgtoController():
         try:
             data = Formas_pgto.query.all()
             newData = {'formas_pgto': [forma_pgto.to_dict() for forma_pgto in data]} #pegando cada obj forma_pgto, e tranformando num dicionario
+            
             return newData, 200
         
         except Exception as e:

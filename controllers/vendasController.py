@@ -166,25 +166,29 @@ def vendasController():
 
     elif request.method == 'DELETE':
         try:
-            id = int(request.args.to_dict().get('id')) #pega o id dos dados que o data trouxe do front
-            venda = Vendas.query.get(id) # vai procurar vendas NO BANCO com esse id
-
-            # dataVendas_produtos = Vendas_produtos.query.all()
-            # newDataVendas_produtos = {'vendas_produtos': [venda_produto.to_dict() for venda_produto in dataVendas_produtos]} #pegando cada obj venda, e tranformando num dicionario
-            
-            # for produto in newDataVendas_produtos['vendas_produtos']:
-            #     if int(produto['idVenda']) == int(id):
-            #         vendas_produtos = Vendas_produtos.query.get(produto['id'])
-            #         db.session.delete(vendas_produtos)
+            data = int(request.args.to_dict().get('id'))  # Obtém o ID da venda a ser deletada
+            venda = Vendas.query.get(data)  # Procura a venda no banco de dados
 
             if venda is None:
-                return{'error': 'venda não encontrado'}, 405
-            
+                return {'error': 'venda não encontrada'}, 404
+
+            # Remover produtos associados
+            produtos = Vendas_produtos.query.filter_by(idVenda=data).all()
+            for produto in produtos:
+                db.session.delete(produto)
+
+            financeiros = Financeiros.query.filter_by(idVenda=data).all()
+            for financeiro in financeiros:
+                db.session.delete(financeiro)
+
+            # Deletar a venda
             db.session.delete(venda)
             db.session.commit()
-            return "venda deletado com sucesso", 202
+            return "venda deletada com sucesso", 202
 
         except Exception as e:
-            return f"Não foi possível apagar o venda. Erro:{str(e)}", 405
+            db.session.rollback()  
+            return f"Não foi possível apagar a venda. Erro: {str(e)}", 500
+
         
 
