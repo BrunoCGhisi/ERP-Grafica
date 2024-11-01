@@ -16,16 +16,26 @@ def vendasController():
             data = request.get_json() # converte em python
             vendas = Vendas(data['idCliente'], data['idVendedor'], data['dataAtual'], data['isVendaOS'], data['situacao'], data['desconto'])
             vendas_produtos = data.get('vendas_produtos', [])
+            print(vendas_produtos)
             parcelas = data.get('parcelas', []) # parcelas
             forma_pgto = data.get('idForma_pgto', []) # id
 
             db.session.add(vendas)
             db.session.flush() # para conseguir pegar id
             total = 0
-
+            print("CHEGOU AQUI")
             for objVp in vendas_produtos: # Dando post em vendas_produtos
+                print("CHEGOU AQUI 2")
+                print(objVp)
                 idProduto = objVp['idProduto']
-                quantidade = objVp['quantidade']
+                print("aaaaaaaaaaaaaaaaaa", idProduto)
+                quantidade = objVp.get('quantidade')  # Retorna None se 'quantidade' não existe
+                if quantidade is not None:
+                    print("oloko", quantidade)  # Exibe a quantidade se existir
+                else:
+                    print("Quantidade não definida para este produto.")
+                print("aaaaaaaaaaaaaaaaaa")
+                print("oloko", quantidade)
                 produtos = Produtos.query.filter(Produtos.id == objVp['idProduto']).all()
                 for item in produtos:
                     gastoEstoque = item.tamanho * quantidade
@@ -34,6 +44,7 @@ def vendasController():
                         if ins.estoque <= gastoEstoque:
                             info = f'{ins.nome} não possui estoque o suficiente! Reponha para produção.'
                     total += quantidade * item.preco # calcula o valor total da venda
+                    print(vendas.id, idProduto, quantidade)
                 postVendasProdutos = Vendas_produtos(vendas.id, idProduto, quantidade)
                 db.session.add(postVendasProdutos)
 
@@ -97,6 +108,11 @@ def vendasController():
                 data = request.get_json() #pega todos os dados 
                 dataVendas_produtos = data.get('vendas_produtos', []) #preciso pegar os ID's disso aqui, passa no json           
 
+                # PUT EM FINANCEIROS TAMBÉM
+                financeiro = Financeiros.query.filter(Financeiros.idVenda == id).all()
+                print(financeiro)
+                financeiro.parcelas = data.get('parcelas', financeiro.parcelas) 
+
                 for venda_produto in dataVendas_produtos:
                     id_vp = venda_produto.get('id')
                     #print("produto", produto)
@@ -119,7 +135,6 @@ def vendasController():
                     return{'error': 'venda não encontrado'}, 405
                 
                 venda.idCliente = data.get('idCliente', venda.idCliente)
-                venda.idVendedor = data.get('idVendedor', venda.idVendedor)   
                 venda.dataAtual = data.get('dataAtual', venda.dataAtual)   
                 venda.isVendaOS = data.get('isVendaOS', venda.isVendaOS)   
 
@@ -146,12 +161,9 @@ def vendasController():
 
                         dataInsumo = Insumos.query.get(dataProd.idInsumo)
                         desc = quantidade * dataProd.tamanho
-                        print(desc)
+                        
                         dataInsumo.estoque = dataInsumo.estoque - desc
                         
-                    print(allVendasProd)
-                    
-                    print("estoque vai mudar")
                 
                 venda.desconto = data.get('desconto', venda.desconto)
                 venda.situacao = data.get('situacao', venda.situacao)
