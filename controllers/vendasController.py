@@ -19,6 +19,7 @@ def vendasController():
             print(vendas_produtos)
             parcelas = data.get('parcelas', []) # parcelas
             forma_pgto = data.get('idForma_pgto', []) # id
+            idBanco = data.get('idBanco', [])
 
             db.session.add(vendas)
             db.session.flush() # para conseguir pegar id
@@ -55,7 +56,7 @@ def vendasController():
                 descricao = "Venda: " + str(vendas.id)+ ", " + "À vista."       
             else:
                 descricao = "Venda: " + str(vendas.id)+ ", " + "Parcelas: " + str(parcelas) ,
-            postFinanceiro = Financeiros(descricao, vendas.id, 1, total, dataVencimento, vendas.dataAtual, vendas.dataAtual, forma_pgto, 0, 0, parcelas)
+            postFinanceiro = Financeiros(vendas.id, idBanco, forma_pgto, descricao, 1, total, dataVencimento, vendas.dataAtual, vendas.dataAtual, 0, 0, parcelas)
             db.session.add(postFinanceiro)
             #---------------------------------------------------
             
@@ -111,7 +112,9 @@ def vendasController():
                 # PUT EM FINANCEIROS TAMBÉM
                 financeiro = Financeiros.query.filter(Financeiros.idVenda == id).all()
                 print(financeiro)
-                financeiro.parcelas = data.get('parcelas', financeiro.parcelas) 
+                financeiro.parcelas = data.get('parcelas', financeiro.parcelas)
+                financeiro.idBanco = data.get('idBanco', financeiro.idBanco)
+                financeiro.idFormaPgto = data.get('idFormaPgto', financeiro.idFormaPgto) 
 
                 for venda_produto in dataVendas_produtos:
                     id_vp = venda_produto.get('id')

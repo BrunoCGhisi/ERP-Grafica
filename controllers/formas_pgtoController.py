@@ -7,7 +7,7 @@ def formas_pgtoController():
     if request.method == 'POST':
         try:
             data = request.get_json() # converte em python
-            formas_pgto = Formas_pgto(data['tipo'], data['idBanco'])
+            formas_pgto = Formas_pgto(data['tipo'])
             db.session.add(formas_pgto)
             db.session.commit()
             return 'Formas_pgto adicionados com sucesso!', 200
@@ -36,7 +36,6 @@ def formas_pgtoController():
                     return{'error': 'Forma_pgto não encontrado'}, 405
                 
                 forma_pgto.tipo = data.get('tipo', forma_pgto.tipo)
-                forma_pgto.idBanco = data.get('idBanco', forma_pgto.idBanco)   
 
                 db.session.commit()
                 return "Forma_pgto atualizado com sucesso", 202
