@@ -2,6 +2,7 @@ from flask import request
 from database.db import db
 from models.compras import Compras
 from models.insumos import Insumos
+from models.financeiros import Financeiros
 from models.compras_insumos import Compras_insumos
 
 
@@ -14,6 +15,9 @@ def comprasController():
             #Perguntar pro belone se eu preciso fazer a parte de verificar quem é forncedor no back ou se eu só filtro isso no front-end
             compras = Compras(data['idFornecedor'], data['isCompraOS'], data['dataCompra'], data['numNota'], data['desconto'], data['isOpen'])
             compras_insumos = data.get('compras_insumos', [])
+            parcelas = data.get('parcelas', []) # parcelas
+            forma_pgto = data.get('idForma_pgto', []) # id
+            idBanco = data.get('idBanco', [])
 
             db.session.add(compras)
             db.session.flush()
@@ -22,6 +26,9 @@ def comprasController():
                 
                 idInsumo = compra['idInsumo']
                 allInsumos = Insumos.query.filter(Insumos.id == idInsumo).all()
+
+                total += compra['preco'] * compra['tamanho']
+
                 if len(allInsumos) == 0:
                     nome = compra['idInsumo']
                     estoque = compra['quantidade']
@@ -29,7 +36,7 @@ def comprasController():
                     postInsumo = Insumos(nome, estoque, isActive)
                     db.session.add(postInsumo)
                     db.session.flush()
-                    postComprasInsumos = Compras_insumos(compras.id, postInsumo.id, compra['preco'], compra['quantidade'], compra['tamanho'])
+                    postComprasInsumos = Compras_insumos(compras.id, postInsumo.id, compra['preco'], compra['tamanho'])
                     db.session.add(postComprasInsumos)
 
                 else:
@@ -39,6 +46,18 @@ def comprasController():
 
                     postComprasInsumos = Compras_insumos(compras.id, idInsumo, preco, quantidade, tamanho)
                     db.session.add(postComprasInsumos)
+
+
+                # FINANCEIRO -------------------------------------- RECEBER
+                dataVenda = datetime.strptime(compras.dataAtual, "%Y-%m-%d").date()
+                dataVencimento = dataVenda + timedelta(days=30)
+                if forma_pgto == 1 or forma_pgto == 2 or forma_pgto == 4:
+                    descricao = "Compra: " + str(compras.id)+ ", " + "À vista."       
+                else:
+                    descricao = "Venda: " + str(compras.id)+ ", " + "Parcelas: " + str(parcelas) ,
+                postFinanceiro = Financeiros(compras.id, idBanco, forma_pgto, descricao, 1, total, dataVencimento, compras.dataAtual, compras.dataAtual, 0, 0, parcelas)
+                db.session.add(postFinanceiro)
+                #---------------------------------------------------
 
             db.session.commit()
             return 'Compras adicionados com sucesso!', 200

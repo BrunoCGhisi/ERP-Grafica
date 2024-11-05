@@ -24,19 +24,10 @@ def vendasController():
             db.session.add(vendas)
             db.session.flush() # para conseguir pegar id
             total = 0
-            print("CHEGOU AQUI")
+
             for objVp in vendas_produtos: # Dando post em vendas_produtos
-                print("CHEGOU AQUI 2")
-                print(objVp)
                 idProduto = objVp['idProduto']
-                print("aaaaaaaaaaaaaaaaaa", idProduto)
                 quantidade = objVp.get('quantidade')  # Retorna None se 'quantidade' não existe
-                if quantidade is not None:
-                    print("oloko", quantidade)  # Exibe a quantidade se existir
-                else:
-                    print("Quantidade não definida para este produto.")
-                print("aaaaaaaaaaaaaaaaaa")
-                print("oloko", quantidade)
                 produtos = Produtos.query.filter(Produtos.id == objVp['idProduto']).all()
                 for item in produtos:
                     gastoEstoque = item.tamanho * quantidade
@@ -56,7 +47,7 @@ def vendasController():
                 descricao = "Venda: " + str(vendas.id)+ ", " + "À vista."       
             else:
                 descricao = "Venda: " + str(vendas.id)+ ", " + "Parcelas: " + str(parcelas) ,
-            postFinanceiro = Financeiros(vendas.id, idBanco, forma_pgto, descricao, 1, total, dataVencimento, vendas.dataAtual, vendas.dataAtual, 0, 0, parcelas)
+            postFinanceiro = Financeiros(vendas.id, idBanco, forma_pgto, descricao, 1, total, dataVencimento, vendas.dataAtual, "", 0, 0, parcelas)
             db.session.add(postFinanceiro)
             #---------------------------------------------------
             
@@ -118,22 +109,15 @@ def vendasController():
 
                 for venda_produto in dataVendas_produtos:
                     id_vp = venda_produto.get('id')
-                    #print("produto", produto)
+
                     vendas_produtos = Vendas_produtos.query.filter(Vendas_produtos.idVenda == id).all()
-                    #print(vendas_produtos)
-                    #print(len(vendas_produtos))
-                        
+
                     for produto_vp in vendas_produtos:
-                        
-                        #print(id_vp)
-                        #print(produto_vp.id)
                         if produto_vp.id == id_vp:
-                            #print("OOOOLOKO")
                             produto_vp.idProduto = produto.get('idProduto')
                             produto_vp.quantidade = produto.get('quantidade')                       
                             db.session.commit()  
                 
-
                 if venda is None:
                     return{'error': 'venda não encontrado'}, 405
                 
@@ -155,12 +139,6 @@ def vendasController():
                         for ins in insumos:
                             if (quantidade * dataProd.tamanho) > ins.estoque or ins.estoque == 0:
                                 return f'Estoque insuficiente para a produção do produto: {dataProd.nome} , reponha!', 200
-
-                        # print("nome: ",dataProd.nome)
-                        # print("insumo: ",dataProd.idInsumo)
-                        # print("tamanho: ",dataProd.tamanho)
-                        # print("quant:",quantidade)
-                        # print(20*"-")
 
                         dataInsumo = Insumos.query.get(dataProd.idInsumo)
                         desc = quantidade * dataProd.tamanho
