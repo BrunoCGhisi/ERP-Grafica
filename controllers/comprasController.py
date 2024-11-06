@@ -4,6 +4,7 @@ from models.compras import Compras
 from models.insumos import Insumos
 from models.financeiros import Financeiros
 from models.compras_insumos import Compras_insumos
+from datetime import timedelta, datetime
 
 
 def comprasController():

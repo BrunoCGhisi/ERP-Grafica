@@ -1,6 +1,7 @@
 from flask import request
 from database.db import db
 from models.financeiros import Financeiros
+from datetime import date
 
 def financeirosController():
 
@@ -39,11 +40,16 @@ def financeirosController():
                 financeiro.isPagarReceber = data.get('isPagarReceber', financeiro.isPagarReceber)   
                 # financeiro.valor = data.get('valor', financeiro.valor)   
                 financeiro.dataVencimento = data.get('dataVencimento', financeiro.dataVencimento)
-                financeiro.dataCompetencia = data.get('dataCompetencia', financeiro.dataCompetencia)   
-                financeiro.dataPagamento = data.get('dataPagamento', financeiro.dataPagamento)     
+                financeiro.dataCompetencia = data.get('dataCompetencia', financeiro.dataCompetencia)       
                 # financeiro.idFormaPgto = data.get('idFormaPgto', financeiro.idFormaPgto)
                 # financeiro.idBanco = data.get('idBanco', financeiro.idBanco)
                 financeiro.situacao = data.get('situacao', financeiro.situacao)
+
+                if data.get('situacao', financeiro.situacao) == 1:
+                    financeiro.dataPagamento =  date.today()
+                if data.get('situacao', financeiro.situacao) == 0:
+                    financeiro.dataPagamento = ""
+
                 financeiro.isOpen = data.get('isOpen', financeiro.isOpen)     
                 # financeiro.parcelas = data.get('parcelas', financeiro.parcelas)  
 
