@@ -14,5 +14,8 @@ class Formas_pgto(db.Model):
 
     def __init__(self, tipo):
         self.tipo = tipo
+<<<<<<< HEAD
 
+=======
+>>>>>>> 4d641f33a79ff5e2c1149bc0eda7dfb80bdb91b2
 

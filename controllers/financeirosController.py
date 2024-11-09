@@ -1,13 +1,14 @@
 from flask import request
 from database.db import db
 from models.financeiros import Financeiros
+from datetime import date
 
 def financeirosController():
 
     if request.method == 'POST':
         try:
             data = request.get_json() # converte em python
-            financeiros = Financeiros(data['descricao'], data['idVenda'], data['isPagarReceber'], data['valor'], data['dataVencimento'], data['dataCompetencia'], data['dataPagamento'], data['idFormaPgto'], data['situacao'], data['isOpen'], data['parcelas'])
+            financeiros = Financeiros(data['idVenda'], data['idBanco'], data['idFormaPgto'], data['descricao'], data['isPagarReceber'], data['valor'], data['dataVencimento'], data['dataCompetencia'], data['dataPagamento'], data['situacao'], data['isOpen'], data['parcelas'])
             db.session.add(financeiros)
             db.session.commit()
             return 'Financeiros adicionados com sucesso!', 200
@@ -39,12 +40,18 @@ def financeirosController():
                 financeiro.isPagarReceber = data.get('isPagarReceber', financeiro.isPagarReceber)   
                 # financeiro.valor = data.get('valor', financeiro.valor)   
                 financeiro.dataVencimento = data.get('dataVencimento', financeiro.dataVencimento)
-                financeiro.dataCompetencia = data.get('dataCompetencia', financeiro.dataCompetencia)   
-                financeiro.dataPagamento = data.get('dataPagamento', financeiro.dataPagamento)     
-                financeiro.idFormaPgto = data.get('idFormaPgto', financeiro.idFormaPgto)
+                financeiro.dataCompetencia = data.get('dataCompetencia', financeiro.dataCompetencia)       
+                # financeiro.idFormaPgto = data.get('idFormaPgto', financeiro.idFormaPgto)
+                # financeiro.idBanco = data.get('idBanco', financeiro.idBanco)
                 financeiro.situacao = data.get('situacao', financeiro.situacao)
+
+                if data.get('situacao', financeiro.situacao) == 1:
+                    financeiro.dataPagamento =  date.today()
+                if data.get('situacao', financeiro.situacao) == 0:
+                    financeiro.dataPagamento = ""
+
                 financeiro.isOpen = data.get('isOpen', financeiro.isOpen)     
-                #financeiro.parcelas = data.get('parcelas', financeiro.parcelas)  
+                # financeiro.parcelas = data.get('parcelas', financeiro.parcelas)  
 
                 db.session.commit()
                 return "financeiro atualizado com sucesso", 202

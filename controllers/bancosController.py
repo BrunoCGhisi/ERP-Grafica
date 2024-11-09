@@ -3,7 +3,20 @@ from database.db import db
 from models.bancos import Bancos
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
-@jwt_required(True)
+def getBancos():
+    if request.method == 'GET':
+        try:
+            bancos = []
+            data = Bancos.query.all()
+            newData = {'bancos': [banco.to_dict() for banco in data]}  # pegando cada obj banco e transformando em dicionário
+            for item in newData['bancos']:
+                bancos.append(item)
+                print(bancos)
+            return bancos, 200
+            
+        except Exception as e:
+            return f'Não foi possível buscar. Erro {str(e)}', 405
+        
 def bancosController():
     if request.method == 'POST':
         try:
