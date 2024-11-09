@@ -18,8 +18,11 @@ def bancosController():
     elif request.method == 'GET':
         try:
             data = Bancos.query.all()
-            newData = {'bancos': [banco.to_dict() for banco in data]}  # Transformando para JSON
-            return newData, 200
+            #newData = {'bancos': [banco.to_dict() for banco in data]}  # Transformando para JSON
+            getBanco = [banco.to_dict() for banco in data]
+            return {
+                "getBancos": getBanco
+            }, 200
         except Exception as e:
             return f'Não foi possível buscar. Erro: {str(e)}', 405
 

@@ -2,6 +2,7 @@ from flask import request
 from database.db import db
 from models.formas_pgto import Formas_pgto
 
+
 def formas_pgtoController():
 
     if request.method == 'POST':
@@ -19,7 +20,26 @@ def formas_pgtoController():
         try:
             data = Formas_pgto.query.all()
             newData = {'formas_pgto': [forma_pgto.to_dict() for forma_pgto in data]} #pegando cada obj forma_pgto, e tranformando num dicionario
-            
+            if len(data) <= 1:
+
+                if len(data) == 1: 
+                    db.session.add(Formas_pgto("Débito"))
+                    db.session.add(Formas_pgto("Crédito"))
+                    db.session.add(Formas_pgto("Pix"))
+                    db.session.add(Formas_pgto("Boleto"))
+                    db.session.add(Formas_pgto("À prazo"))
+                    db.session.add(Formas_pgto("Cheque"))
+                    db.session.commit()
+                elif len(data) == 0:
+                    db.session.add(Formas_pgto("Dinheiro"))
+                    db.session.add(Formas_pgto("Débito"))
+                    db.session.add(Formas_pgto("Crédito"))
+                    db.session.add(Formas_pgto("Pix"))
+                    db.session.add(Formas_pgto("Boleto"))
+                    db.session.add(Formas_pgto("À prazo"))
+                    db.session.add(Formas_pgto("Cheque"))
+                    db.session.commit()
+
             return newData, 200
         
         except Exception as e:

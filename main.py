@@ -15,8 +15,8 @@ class MyServer(): #classe que inicializa e guarda o funcionamento do flask
         self.app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(minutes=5)
         db.init_app(self.app) #inicializa o flask para usar com a extensão (mysqalchemy )
         routeIndex(self.app) 
-        
         jwt = JWTManager(self.app)
+        
 
     def run(self):
         return self.app.run(port=3000, debug=True, host='localhost')
@@ -24,3 +24,4 @@ class MyServer(): #classe que inicializa e guarda o funcionamento do flask
 if __name__ == '__main__' :
     app = MyServer() #instanciando
     app.run() #inicializando
+    

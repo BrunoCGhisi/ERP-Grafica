@@ -7,16 +7,12 @@ class Formas_pgto(db.Model):
         return{
             'id': self.id,
             'tipo': self.tipo,
-            'idBanco': self.idBanco
             }
 
     id = db.Column(db.Integer, primary_key = True, nullable=False)
     tipo = db.Column(db.String, nullable=False)
-    idBanco = db.Column(ForeignKey('bancos.id'), nullable=False)
 
-    banco = relationship('Bancos', backref='forma_pgto')
-
-    def __init__(self, tipo, idBanco):
+    def __init__(self, tipo):
         self.tipo = tipo
-        self.idBanco = idBanco
+
 
