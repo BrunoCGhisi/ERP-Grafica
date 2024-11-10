@@ -17,14 +17,14 @@ def vendasController():
             vendas = Vendas(data['idCliente'], data['idVendedor'], data['dataAtual'], data['isVendaOS'], data['situacao'], data['desconto'])
             vendas_produtos = data.get('vendas_produtos', [])
             print(vendas_produtos)
-            parcelas = data.get('parcelas', []) # parcelas
+            parcelas = data.get('parcelas') # parcelas
             forma_pgto = data.get('idForma_pgto', []) # id
             idBanco = data.get('idBanco', [])
 
             db.session.add(vendas)
             db.session.flush() # para conseguir pegar id
             total = 0
-
+            
             for objVp in vendas_produtos: # Dando post em vendas_produtos
                 idProduto = objVp['idProduto']
                 quantidade = objVp.get('quantidade')  # Retorna None se 'quantidade' não existe
@@ -99,14 +99,17 @@ def vendasController():
                 venda = Vendas.query.get(id)
                 data = request.get_json() #pega todos os dados 
                 dataVendas_produtos = data.get('vendas_produtos', []) #preciso pegar os ID's disso aqui, passa no json           
-
+                aaaa = request.get_json()
+                
                 # PUT EM FINANCEIROS TAMBÉM
-                financeiro = Financeiros.query.filter(Financeiros.idVenda == id).all()
+                financeiro = Financeiros.query.filter(Financeiros.idVenda == id).first()
                 print(financeiro)
+                print("a", data.get('parcelas'))
+                print("aaaa",financeiro.parcelas)
                 financeiro.parcelas = data.get('parcelas', financeiro.parcelas)
                 financeiro.idBanco = data.get('idBanco', financeiro.idBanco)
                 financeiro.idFormaPgto = data.get('idFormaPgto', financeiro.idFormaPgto) 
-
+                financeiro.parcelas = data.get('parcelas', financeiro.parcelas) 
                 for venda_produto in dataVendas_produtos:
                     id_vp = venda_produto.get('id')
 
