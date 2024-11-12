@@ -15,3 +15,4 @@ class Formas_pgto(db.Model):
     def __init__(self, tipo):
         self.tipo = tipo
 
+
