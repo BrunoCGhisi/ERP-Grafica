@@ -11,7 +11,6 @@ def getProdutos():
             newData = {'produtos': [produto.to_dict() for produto in data]}  # pegando cada obj produto e transformando em dicionário
             for item in newData['produtos']:
                 produtos.append(item)
-                print(produtos)
             return produtos, 200
             
             
@@ -23,7 +22,8 @@ def produtosController():
     if request.method == 'POST':
         try:
             data = request.get_json() # converte em python
-            produtos = Produtos(data['nome'], data['tipo'], data['keyWord'], data['idInsumo'], data['idCategoria'], data['preco'], data['tamanho'])
+
+            produtos = Produtos(data['nome'], data['tipo'], data['keyWord'], data['idInsumo'], data['idCategoria'], data['preco'], data['largura'], data['comprimento'])
             db.session.add(produtos)
             db.session.commit()
             return 'Produtos adicionados com sucesso!', 200
@@ -57,7 +57,9 @@ def produtosController():
                 produto.idInsumo = data.get('idInsumo', produto.idInsumo)     
                 produto.idCategoria = data.get('idCategoria', produto.idCategoria)   
                 produto.preco = data.get('preco', produto.preco)
-                produto.tamanho = data.get('tamanho', produto.tamanho)    
+                produto.tamanho = data.get('tamanho', produto.tamanho)
+                produto.largura = data.get('largura', produto.largura)    
+                produto.comprimento = data.get('comprimento', produto.comprimento)    
 
                 db.session.commit()
                 return "produto atualizado com sucesso", 202

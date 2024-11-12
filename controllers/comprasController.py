@@ -12,7 +12,7 @@ def comprasController():
     if request.method == 'POST':
         try:
             data = request.get_json() # converte em python
-            
+            total = 0
             #Perguntar pro belone se eu preciso fazer a parte de verificar quem é forncedor no back ou se eu só filtro isso no front-end
             compras = Compras(data['idFornecedor'], data['isCompraOS'], data['dataCompra'], data['numNota'], data['desconto'], data['isOpen'])
             compras_insumos = data.get('compras_insumos', [])
@@ -28,37 +28,37 @@ def comprasController():
                 idInsumo = compra['idInsumo']
                 allInsumos = Insumos.query.filter(Insumos.id == idInsumo).all()
 
-                total += compra['preco'] * compra['tamanho']
+                total += compra['preco'] * (compra['largura'] * compra['comprimento'])
 
                 if len(allInsumos) == 0:
                     nome = compra['idInsumo']
-                    estoque = compra['quantidade']
+                    estoque = (compra['largura'] * compra['comprimento'])
                     isActive = 1
                     postInsumo = Insumos(nome, estoque, isActive)
                     db.session.add(postInsumo)
                     db.session.flush()
-                    postComprasInsumos = Compras_insumos(compras.id, postInsumo.id, compra['preco'], compra['tamanho'])
+                    postComprasInsumos = Compras_insumos(compras.id, postInsumo.id, compra['preco'], compra['largura'], compra['comprimento'])
                     db.session.add(postComprasInsumos)
 
                 else:
                     preco = compra['preco']
-                    quantidade = compra['quantidade']
-                    tamanho = compra['tamanho']
+                    largura = compra['largura']
+                    comprimento = compra['comprimento']
 
-                    postComprasInsumos = Compras_insumos(compras.id, idInsumo, preco, quantidade, tamanho)
+                    postComprasInsumos = Compras_insumos(compras.id, idInsumo, preco, largura, comprimento)
                     db.session.add(postComprasInsumos)
 
 
-                # FINANCEIRO -------------------------------------- RECEBER
-                dataVenda = datetime.strptime(compras.dataAtual, "%Y-%m-%d").date()
-                dataVencimento = dataVenda + timedelta(days=30)
-                if forma_pgto == 1 or forma_pgto == 2 or forma_pgto == 4:
-                    descricao = "Compra: " + str(compras.id)+ ", " + "À vista."       
-                else:
-                    descricao = "Venda: " + str(compras.id)+ ", " + "Parcelas: " + str(parcelas) ,
-                postFinanceiro = Financeiros(compras.id, idBanco, forma_pgto, descricao, 1, total, dataVencimento, compras.dataAtual, compras.dataAtual, 0, 0, parcelas)
-                db.session.add(postFinanceiro)
-                #---------------------------------------------------
+                # # FINANCEIRO -------------------------------------- RECEBER
+                # dataVenda = datetime.strptime(compras.dataAtual, "%Y-%m-%d").date()
+                # dataVencimento = dataVenda + timedelta(days=30)
+                # if forma_pgto == 1 or forma_pgto == 2 or forma_pgto == 4:
+                #     descricao = "Compra: " + str(compras.id)+ ", " + "À vista."       
+                # else:
+                #     descricao = "Venda: " + str(compras.id)+ ", " + "Parcelas: " + str(parcelas) ,
+                # postFinanceiro = Financeiros(compras.id, idBanco, forma_pgto, descricao, 1, total, dataVencimento, compras.dataAtual, compras.dataAtual, 0, 0, parcelas)
+                # db.session.add(postFinanceiro)
+                # #---------------------------------------------------
 
             db.session.commit()
             return 'Compras adicionados com sucesso!', 200

@@ -137,7 +137,7 @@ def vendasController():
                         dataProd = Produtos.query.get(idProduto)
                         insumos = Insumos.query.filter(Insumos.id == dataProd.idInsumo).all()
                         for ins in insumos:
-                            if (quantidade * dataProd.tamanho) > ins.estoque or ins.estoque == 0:
+                            if (quantidade * (dataProd.largura * dataProd.comprimento)) > ins.estoque or ins.estoque == 0:
                                 return f'Estoque insuficiente para a produção do produto: {dataProd.nome} , reponha!', 200
 
                         dataInsumo = Insumos.query.get(dataProd.idInsumo)
