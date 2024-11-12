@@ -1,7 +1,34 @@
-from flask import request
+from flask import request, jsonify
 from database.db import db
 from models.produtos import Produtos
+from sqlalchemy import func
+from models.vendas_produtos import Vendas_produtos
+from models.produtos import Produtos
 
+def getPieProdutos():
+    if request.method == 'GET':
+        try:
+            produtos = ( 
+                db.session.query(
+                    Vendas_produtos.idProduto,
+                    Produtos.nome,
+                    func.sum(Vendas_produtos.quantidade).label('totalVendido')
+                )
+                .join(Produtos, Vendas_produtos.idProduto == Produtos.id)
+                .group_by(Vendas_produtos.idProduto, Produtos.nome)
+                .order_by(func.sum(Vendas_produtos.quantidade).desc())
+                .limit(5)
+                .all()
+            )
+            produtos_mais_vendidos = [
+                {"idProduto": produto.idProduto, "nome": produto.nome, "totalVendido": produto.totalVendido}
+                for produto in produtos
+            ]
+            
+            return jsonify(produtos_mais_vendidos), 200
+            
+        except Exception as e:
+            return jsonify({"erro": f"Não foi possível buscar. Erro {str(e)}"}), 405
 
 def getProdutos():
     if request.method == 'GET':
@@ -13,7 +40,6 @@ def getProdutos():
                 produtos.append(item)
                 print(produtos)
             return produtos, 200
-            
             
         except Exception as e:
             return f'Não foi possível buscar. Erro {str(e)}', 405
