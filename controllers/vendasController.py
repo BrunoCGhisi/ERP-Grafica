@@ -30,7 +30,7 @@ def vendasController():
                 quantidade = objVp.get('quantidade')  # Retorna None se 'quantidade' não existe
                 produtos = Produtos.query.filter(Produtos.id == objVp['idProduto']).all()
                 for item in produtos:
-                    gastoEstoque = item.tamanho * quantidade
+                    gastoEstoque = (item.largura * item.comprimento) * quantidade
                     insumos = Insumos.query.filter(Insumos.id == item.idInsumo).all()
                     for ins in insumos:
                         if ins.estoque <= gastoEstoque:
@@ -87,7 +87,7 @@ def vendasController():
     
             return {
                 "vendas": getVendas,
-                "vendas_produtos": getVendasP
+                "vendasProdutos": getVendasP
             }, 200
         
         except Exception as e:
@@ -144,7 +144,7 @@ def vendasController():
                                 return f'Estoque insuficiente para a produção do produto: {dataProd.nome} , reponha!', 200
 
                         dataInsumo = Insumos.query.get(dataProd.idInsumo)
-                        desc = quantidade * dataProd.tamanho
+                        desc = quantidade * (dataProd.largura * dataProd.comprimento)
                         
                         dataInsumo.estoque = dataInsumo.estoque - desc
                         

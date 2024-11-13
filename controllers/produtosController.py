@@ -83,7 +83,6 @@ def produtosController():
                 produto.idInsumo = data.get('idInsumo', produto.idInsumo)     
                 produto.idCategoria = data.get('idCategoria', produto.idCategoria)   
                 produto.preco = data.get('preco', produto.preco)
-                produto.tamanho = data.get('tamanho', produto.tamanho)
                 produto.largura = data.get('largura', produto.largura)    
                 produto.comprimento = data.get('comprimento', produto.comprimento)    
 
