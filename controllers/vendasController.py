@@ -16,15 +16,23 @@ def vendasController():
             data = request.get_json() # converte em python
             vendas = Vendas(data['idCliente'], data['idVendedor'], data['dataAtual'], data['isVendaOS'], data['situacao'], data['desconto'])
             vendas_produtos = data.get('vendas_produtos', [])
-            print(vendas_produtos)
-            parcelas = data.get('parcelas') # parcelas
-            forma_pgto = data.get('idForma_pgto', []) # id
-            idBanco = data.get('idBanco', [])
+            financeiro = data.get('financeiro', [])
+
+       
 
             db.session.add(vendas)
             db.session.flush() # para conseguir pegar id
             total = 0
             
+            for fin in financeiro:
+                print("aqui")
+                parcelas = fin.get("parcelas")  # Use .get() para evitar erros de chave inexistente
+                forma_pgto = fin.get("idForma_pgto")
+                idBanco = fin.get("idBanco")
+
+
+            
+
             for objVp in vendas_produtos: # Dando post em vendas_produtos
                 idProduto = objVp['idProduto']
                 quantidade = objVp.get('quantidade')  # Retorna None se 'quantidade' não existe
@@ -47,6 +55,7 @@ def vendasController():
                 descricao = "Venda: " + str(vendas.id)+ ", " + "À vista."       
             else:
                 descricao = "Venda: " + str(vendas.id)+ ", " + "Parcelas: " + str(parcelas) ,
+            print("forma", forma_pgto)
             postFinanceiro = Financeiros(vendas.id, idBanco, forma_pgto, descricao, 1, total, dataVencimento, vendas.dataAtual, "", 0, 0, parcelas)
             db.session.add(postFinanceiro)
             #---------------------------------------------------
@@ -97,19 +106,21 @@ def vendasController():
             try:
                 id = request.args.to_dict().get('id')
                 venda = Vendas.query.get(id)
+                
                 data = request.get_json() #pega todos os dados 
                 dataVendas_produtos = data.get('vendas_produtos', []) #preciso pegar os ID's disso aqui, passa no json           
-                aaaa = request.get_json()
-                
-                # PUT EM FINANCEIROS TAMBÉM
-                financeiro = Financeiros.query.filter(Financeiros.idVenda == id).first()
-                print(financeiro)
-                print("a", data.get('parcelas'))
-                print("aaaa",financeiro.parcelas)
-                financeiro.parcelas = data.get('parcelas', financeiro.parcelas)
-                financeiro.idBanco = data.get('idBanco', financeiro.idBanco)
-                financeiro.idFormaPgto = data.get('idFormaPgto', financeiro.idFormaPgto) 
-                financeiro.parcelas = data.get('parcelas', financeiro.parcelas) 
+                dataFinanceiros = data.get('financeiro', [])
+
+                 # PUT EM FINANCEIROS TAMBÉM
+                financeiros = Financeiros.query.filter(Financeiros.idVenda == id).all()
+                for i in range(len(financeiros)):
+                    financeiro = financeiros[i]
+                    fin_data = dataFinanceiros[i]
+
+                    financeiro.parcelas = fin_data.get('parcelas', financeiro.parcelas)
+                    financeiro.idFormaPgto = fin_data.get('idForma_pgto', financeiro.idFormaPgto)
+                    financeiro.idBanco = fin_data.get('idBanco', financeiro.idBanco)
+
                 for venda_produto in dataVendas_produtos:
                     id_vp = venda_produto.get('id')
 
