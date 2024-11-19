@@ -18,16 +18,13 @@ def vendasController():
             vendas_produtos = data.get('vendas_produtos', [])
             financeiro = data.get('financeiro', [])
 
-       
-
             db.session.add(vendas)
             db.session.flush() # para conseguir pegar id
             total = 0
             
             for fin in financeiro:
-                print("aqui")
                 parcelas = fin.get("parcelas")  # Use .get() para evitar erros de chave inexistente
-                forma_pgto = fin.get("idForma_pgto")
+                forma_pgto = fin.get("idFormaPgto")
                 idBanco = fin.get("idBanco")
 
 
@@ -44,7 +41,7 @@ def vendasController():
                         if ins.estoque <= gastoEstoque:
                             info = f'{ins.nome} não possui estoque o suficiente! Reponha para produção.'
                     total += quantidade * item.preco # calcula o valor total da venda
-                    print(vendas.id, idProduto, quantidade)
+                    
                 postVendasProdutos = Vendas_produtos(vendas.id, idProduto, quantidade)
                 db.session.add(postVendasProdutos)
 
@@ -54,8 +51,8 @@ def vendasController():
             if forma_pgto == 1 or forma_pgto == 2 or forma_pgto == 4:
                 descricao = "Venda: " + str(vendas.id)+ ", " + "À vista."       
             else:
-                descricao = "Venda: " + str(vendas.id)+ ", " + "Parcelas: " + str(parcelas) ,
-            print("forma", forma_pgto)
+                descricao = "Venda: " + str(vendas.id)+ ", " + "Parcelas: " + str(parcelas)
+           
             postFinanceiro = Financeiros(vendas.id, idBanco, forma_pgto, descricao, 1, total, dataVencimento, vendas.dataAtual, "", 0, 0, parcelas)
             db.session.add(postFinanceiro)
             #---------------------------------------------------
@@ -73,8 +70,11 @@ def vendasController():
         try:
             dataVendas = Vendas.query.all()
             dataVendas_produtos = Vendas_produtos.query.all()
+            
             newDataVendas = {'vendas': [venda.to_dict() for venda in dataVendas]}
             newDataVendas_produtos = {'vendas_produtos': [venda_produto.to_dict() for venda_produto in dataVendas_produtos]} #pegando cada obj venda, e tranformando num dicionario
+            
+            
 
             idVenda = []
             fkVenda = []
@@ -85,18 +85,25 @@ def vendasController():
 
             for venda in newDataVendas['vendas']:
                 idVenda.append(venda['id'])
-
+                dataFinanceiros = Financeiros.query.filter(Financeiros.idVenda == venda['id']).all()
+                newDataFinanceiro = [financeiro.to_dict() for financeiro in dataFinanceiros]
+              
+                
+            
                 for idV in idVenda:
                     for fkV in fkVenda:
                         if fkV == idV:
                             getVendas = [venda.to_dict() for venda in dataVendas]
                             getVendasP =[venda_produto.to_dict() for venda_produto in dataVendas_produtos]
+                            
                         else:
                             getVendas = [venda.to_dict() for venda in dataVendas]
+                            
     
             return {
                 "vendas": getVendas,
-                "vendasProdutos": getVendasP
+                "vendasProdutos": getVendasP,
+                "financeiro": newDataFinanceiro
             }, 200
         
         except Exception as e:
@@ -105,32 +112,41 @@ def vendasController():
     elif request.method == 'PUT':
             try:
                 id = request.args.to_dict().get('id')
-                venda = Vendas.query.get(id)
                 
+                venda = Vendas.query.get(id)
                 data = request.get_json() #pega todos os dados 
                 dataVendas_produtos = data.get('vendas_produtos', []) #preciso pegar os ID's disso aqui, passa no json           
                 dataFinanceiros = data.get('financeiro', [])
+                print("DataFia", dataFinanceiros)
 
-                 # PUT EM FINANCEIROS TAMBÉM
+                # PUT EM FINANCEIROS ---------------------------
                 financeiros = Financeiros.query.filter(Financeiros.idVenda == id).all()
                 for i in range(len(financeiros)):
                     financeiro = financeiros[i]
                     fin_data = dataFinanceiros[i]
+                    print(fin_data)
 
                     financeiro.parcelas = fin_data.get('parcelas', financeiro.parcelas)
-                    financeiro.idFormaPgto = fin_data.get('idForma_pgto', financeiro.idFormaPgto)
+                    financeiro.idFormaPgto = fin_data.get('idFormaPgto', financeiro.idFormaPgto)
+                    print(financeiro.idFormaPgto)
+
+                    if financeiro.idFormaPgto != 1 and financeiro.idFormaPgto != 2 and financeiro.idFormaPgto != 4:     
+                        descricao = "Venda: " + str(id)+ ", " + "Parcelas: " + str(fin_data.get('parcelas', financeiro.parcelas))
+                    else:
+                         descricao = "Venda: " + str(venda.id)+ ", " + "À vista."   
+                    financeiro.descricao = descricao
                     financeiro.idBanco = fin_data.get('idBanco', financeiro.idBanco)
+                # PUT EM VP ---------------------------
+                vendas_produtos = Vendas_produtos.query.filter(Vendas_produtos.idVenda == id).all()
 
-                for venda_produto in dataVendas_produtos:
-                    id_vp = venda_produto.get('id')
+                for i in range(len(vendas_produtos)):
+                    venda_produto = vendas_produtos[i]
+                    vp_data = dataVendas_produtos[i]
 
-                    vendas_produtos = Vendas_produtos.query.filter(Vendas_produtos.idVenda == id).all()
+                    venda_produto.idProduto = vp_data.get('idProduto', venda_produto.idProduto)
+                    venda_produto.quantidade = vp_data.get('quantidade', venda_produto.quantidade)
 
-                    for produto_vp in vendas_produtos:
-                        if produto_vp.id == id_vp:
-                            produto_vp.idProduto = produto.get('idProduto')
-                            produto_vp.quantidade = produto.get('quantidade')                       
-                            db.session.commit()  
+                    db.session.commit()  
                 
                 if venda is None:
                     return{'error': 'venda não encontrado'}, 405
