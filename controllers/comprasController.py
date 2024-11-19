@@ -58,9 +58,39 @@ def comprasController():
 
     elif request.method == 'GET':
         try:
-            data = Compras.query.all()
-            newData = {'compras': [compra.to_dict() for compra in data]} #pegando cada obj compra, e tranformando num dicionario
-            return newData, 200
+            dataCompras = Compras.query.all()
+           
+            dataCompras_insumos = Compras_insumos.query.all()
+            
+            newDataCompras = {'compras': [compra.to_dict() for compra in dataCompras]}
+
+            newDataCompras_insumos = {'compras_insumos': [compra_insumo.to_dict() for compra_insumo in dataCompras_insumos]} #pegando cada obj compra, e tranformando num dicionario
+           
+            idCompra = []
+            fkCompra = []
+            getComprasI = {"compra_insumo": []}
+
+            for compra_insumo in newDataCompras_insumos['compras_insumos']:
+                fkCompra.append(compra_insumo['idCompra']) 
+
+            for compra in newDataCompras['compras']:
+                idCompra.append(compra['id'])
+                
+              
+                for idV in idCompra:
+                    for fkV in fkCompra:
+                        if fkV == idV:
+                            getCompras = [compra.to_dict() for compra in dataCompras]
+                            getComprasI =[compra_insumo.to_dict() for compra_insumo in dataCompras_insumos]
+                            
+                        else:
+                            getCompras = [compra.to_dict() for compra in dataCompras]
+                            
+
+            return {
+                "compras": getCompras,
+                "comprasInsumos": getComprasI
+            }, 200
         
         except Exception as e:
             return f'Não foi possível buscar. Erro {str(e)}', 405
@@ -127,10 +157,7 @@ def comprasController():
             compra = Compras.query.get(id) # vai procurar compras NO BANCO com esse id
 
             dataCompras_insumos = Compras_insumos.query.all()
-            newDataCompras_insumos = {'compras_insumos': [compra_produto.to_dict() for compra_produto in dataCompras_insumos]} #pegando cada obj venda, e tranformando num dicionario
-
-            dataFinanceiros = Financeiros.query.all()
-            newDataFinanceiros = {'financeiros': [financeiro.to_dict() for financeiro in dataFinanceiros]} #pegado cada obj venda, e tranformando num dicionario
+            newDataCompras_insumos = {'compras_insumos': [compra_produto.to_dict() for compra_produto in dataCompras_insumos]} #pegando cada obj compra, e tranformando num dicionario
             
             for produto in newDataCompras_insumos['compras_insumos']:
                 if int(produto['idCompra']) == int(id):
