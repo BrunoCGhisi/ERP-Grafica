@@ -69,13 +69,13 @@ def vendasController():
     elif request.method == 'GET':
         try:
             dataVendas = Vendas.query.all()
+           
             dataVendas_produtos = Vendas_produtos.query.all()
             
             newDataVendas = {'vendas': [venda.to_dict() for venda in dataVendas]}
-            newDataVendas_produtos = {'vendas_produtos': [venda_produto.to_dict() for venda_produto in dataVendas_produtos]} #pegando cada obj venda, e tranformando num dicionario
-            
-            
 
+            newDataVendas_produtos = {'vendas_produtos': [venda_produto.to_dict() for venda_produto in dataVendas_produtos]} #pegando cada obj venda, e tranformando num dicionario
+           
             idVenda = []
             fkVenda = []
             getVendasP = {"vendas_produto": []}
@@ -85,11 +85,8 @@ def vendasController():
 
             for venda in newDataVendas['vendas']:
                 idVenda.append(venda['id'])
-                dataFinanceiros = Financeiros.query.filter(Financeiros.idVenda == venda['id']).all()
-                newDataFinanceiro = [financeiro.to_dict() for financeiro in dataFinanceiros]
-              
                 
-            
+              
                 for idV in idVenda:
                     for fkV in fkVenda:
                         if fkV == idV:
@@ -99,11 +96,10 @@ def vendasController():
                         else:
                             getVendas = [venda.to_dict() for venda in dataVendas]
                             
-    
+
             return {
                 "vendas": getVendas,
-                "vendasProdutos": getVendasP,
-                "financeiro": newDataFinanceiro
+                "vendasProdutos": getVendasP
             }, 200
         
         except Exception as e:

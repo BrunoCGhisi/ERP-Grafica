@@ -23,7 +23,7 @@ def financeirosController():
     elif request.method == 'GET':
         try:
             data = Financeiros.query.all()
-            newData = {'financeiros': [financeiro.to_dict() for financeiro in data]} #pegando cada obj financeiro, e tranformando num dicionario
+            newData = [financeiro.to_dict() for financeiro in data] #pegando cada obj financeiro, e tranformando num dicionario
             return newData, 200
         
         except Exception as e:
