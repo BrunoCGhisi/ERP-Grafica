@@ -12,7 +12,7 @@ def financeirosController():
     if request.method == 'POST':
         try:
             data = request.get_json() # converte em python
-            financeiros = Financeiros(data['idVenda'], data['idBanco'], data['idFormaPgto'], data['descricao'], data['isPagarReceber'], data['valor'], data['dataVencimento'], data['dataCompetencia'], data['dataPagamento'], data['situacao'], data['isOpen'], data['parcelas'])
+            financeiros = Financeiros(data['idVenda'], data['idCompra'], data['idBanco'], data['idFormaPgto'], data['descricao'], data['isPagarReceber'], data['valor'], data['dataVencimento'], data['dataCompetencia'], data['dataPagamento'], data['situacao'], data['parcelas'])
             db.session.add(financeiros)
             db.session.commit()
             return 'Financeiros adicionados com sucesso!', 200

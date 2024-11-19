@@ -11,54 +11,44 @@ def comprasController():
 
     if request.method == 'POST':
         try:
-            data = request.get_json() # converte em python
             total = 0
-            #Perguntar pro belone se eu preciso fazer a parte de verificar quem é forncedor no back ou se eu só filtro isso no front-end
-            compras = Compras(data['idFornecedor'], data['isCompraOS'], data['dataCompra'], data['numNota'], data['desconto'], data['isOpen'])
+            data = request.get_json() # converte em python
+            compras = Compras(data['idFornecedor'], data['isCompraOS'], data['dataCompra'], data['numNota'], data['desconto'])
             compras_insumos = data.get('compras_insumos', [])
-            parcelas = data.get('parcelas', []) # parcelas
-            forma_pgto = data.get('idForma_pgto', []) # id
-            idBanco = data.get('idBanco', [])
+            financeiro = data.get('financeiros', [])
 
             db.session.add(compras)
             db.session.flush()
 
+            for fin in financeiro:
+                parcelas = fin.get("parcelas")  
+                forma_pgto = fin.get("idFormaPgto")
+                idBanco = fin.get("idBanco")
+
             for compra in compras_insumos:
                 
                 idInsumo = compra['idInsumo']
-                allInsumos = Insumos.query.filter(Insumos.id == idInsumo).all()
 
                 total += compra['preco'] * (compra['largura'] * compra['comprimento'])
 
-                if len(allInsumos) == 0:
-                    nome = compra['idInsumo']
-                    estoque = (compra['largura'] * compra['comprimento'])
-                    isActive = 1
-                    postInsumo = Insumos(nome, estoque, isActive)
-                    db.session.add(postInsumo)
-                    db.session.flush()
-                    postComprasInsumos = Compras_insumos(compras.id, postInsumo.id, compra['preco'], compra['largura'], compra['comprimento'])
-                    db.session.add(postComprasInsumos)
+                preco = compra['preco']
+                largura = compra['largura']
+                comprimento = compra['comprimento']
 
-                else:
-                    preco = compra['preco']
-                    largura = compra['largura']
-                    comprimento = compra['comprimento']
-
-                    postComprasInsumos = Compras_insumos(compras.id, idInsumo, preco, largura, comprimento)
-                    db.session.add(postComprasInsumos)
+                postComprasInsumos = Compras_insumos(compras.id, idInsumo, preco, largura, comprimento)
+                db.session.add(postComprasInsumos)
 
 
-                # # FINANCEIRO -------------------------------------- RECEBER
-                # dataVenda = datetime.strptime(compras.dataAtual, "%Y-%m-%d").date()
-                # dataVencimento = dataVenda + timedelta(days=30)
-                # if forma_pgto == 1 or forma_pgto == 2 or forma_pgto == 4:
-                #     descricao = "Compra: " + str(compras.id)+ ", " + "À vista."       
-                # else:
-                #     descricao = "Venda: " + str(compras.id)+ ", " + "Parcelas: " + str(parcelas) ,
-                # postFinanceiro = Financeiros(compras.id, idBanco, forma_pgto, descricao, 1, total, dataVencimento, compras.dataAtual, compras.dataAtual, 0, 0, parcelas)
-                # db.session.add(postFinanceiro)
-                # #---------------------------------------------------
+            # FINANCEIRO -------------------------------------- RECEBER
+            dataCompra = datetime.strptime(compras.dataCompra, "%Y-%m-%d").date()
+            dataVencimento = dataCompra + timedelta(days=30)
+            if forma_pgto == 1 or forma_pgto == 2 or forma_pgto == 4:
+                descricao = "Compra: " + str(compras.id)+ ", " + "À vista."       
+            else:
+                descricao = "Compra: " + str(compras.id)+ ", " + "Parcelas: " + str(parcelas) ,
+            postFinanceiro = Financeiros(None, compras.id, idBanco, forma_pgto, descricao, 0, total, dataVencimento, compras.dataCompra, None, 0, parcelas)
+            db.session.add(postFinanceiro)
+                #---------------------------------------------------
 
             db.session.commit()
             return 'Compras adicionados com sucesso!', 200
@@ -81,7 +71,37 @@ def comprasController():
                 id = request.args.to_dict().get('id')
                 compra = Compras.query.get(id)
                 data = request.get_json() #pega todos os dados
-                print("PUTPUYPUT", data)
+                dataCompras_insumos = data.get('compras_insumos', []) #preciso pegar os ID's disso aqui, passa no json           
+                dataFinanceiros = data.get('financeiros', [])
+                 # PUT EM FINANCEIROS ---------------------------
+                financeiros = Financeiros.query.filter(Financeiros.idVenda == id).all()
+                for i in range(len(financeiros)):
+                    financeiro = financeiros[i]
+                    fin_data = dataFinanceiros[i]
+                    print(fin_data)
+
+                    financeiro.parcelas = fin_data.get('parcelas', financeiro.parcelas)
+                    financeiro.idFormaPgto = fin_data.get('idFormaPgto', financeiro.idFormaPgto)
+                    print(financeiro.idFormaPgto)
+
+                    if financeiro.idFormaPgto != 1 and financeiro.idFormaPgto != 2 and financeiro.idFormaPgto != 4:     
+                        descricao = "Compra: " + str(id)+ ", " + "Parcelas: " + str(fin_data.get('parcelas', financeiro.parcelas))
+                    else:
+                         descricao = "Compra: " + str(compra.id)+ ", " + "À vista."   
+                    financeiro.descricao = descricao
+                    financeiro.idBanco = fin_data.get('idBanco', financeiro.idBanco)
+                    
+                # PUT EM VP ---------------------------
+                compras_insumos = Compras_insumos.query.filter(Compras_insumos.idVenda == id).all()
+
+                for i in range(len(compras_insumos)):
+                    compra_insumo = compras_insumos[i]
+                    ci_data = dataCompras_insumos[i]
+
+                    compra_insumo.idInsumo = ci_data.get('idInsumo', compra_insumo.idInsumo)
+                    compra_insumo.largura = ci_data.get('largura', compra_insumo.largura)
+                    compra_insumo.comprimento = ci_data.get('comprimento', compra_insumo.comprimento)
+                    compra_insumo.preco = ci_data.get('preco', compra_insumo.preco)
 
                 
                 if compra is None:
@@ -92,7 +112,7 @@ def comprasController():
                 compra.dataCompra = data.get('dataCompra', compra.dataCompra)   
                 compra.numNota = data.get('numNota', compra.numNota)   
                 compra.desconto = data.get('desconto', compra.desconto)
-                compra.isOpen = data.get('isOpen', compra.isOpen) 
+  
 
                 db.session.commit()
                 return "compra atualizado com sucesso", 202
@@ -108,12 +128,18 @@ def comprasController():
 
             dataCompras_insumos = Compras_insumos.query.all()
             newDataCompras_insumos = {'compras_insumos': [compra_produto.to_dict() for compra_produto in dataCompras_insumos]} #pegando cada obj venda, e tranformando num dicionario
+
+            dataFinanceiros = Financeiros.query.all()
+            newDataFinanceiros = {'financeiros': [financeiro.to_dict() for financeiro in dataFinanceiros]} #pegado cada obj venda, e tranformando num dicionario
             
             for produto in newDataCompras_insumos['compras_insumos']:
                 if int(produto['idCompra']) == int(id):
                     prodObj = Compras_insumos.query.get(produto['id'])
                     db.session.delete(prodObj)
+            
 
+            finfilter = Financeiros.query.filter(Financeiros.idCompra == id).first()
+            db.session.delete(finfilter)
 
             if compra is None:
                 return{'error': 'compra não encontrado'}, 405

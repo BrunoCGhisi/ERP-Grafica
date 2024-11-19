@@ -8,6 +8,7 @@ class Financeiros(db.Model):
             'id': self.id,
             'descricao': self.descricao,
             'idVenda': self.idVenda,
+            'idCompra': self.idCompra,
             'isPagarReceber': self.isPagarReceber,
             'valor': self.valor,
             'dataVencimento': self.dataVencimento,
@@ -15,14 +16,13 @@ class Financeiros(db.Model):
             'dataPagamento': self.dataPagamento,
             'idFormaPgto': self.idFormaPgto,
             'situacao': self.situacao,
-            'isOpen': self.isOpen,
             'parcelas': self.parcelas,
             'idBanco': self.idBanco
             }
 
     id = db.Column(db.Integer, primary_key = True, nullable=False)
-    idVenda = db.Column(ForeignKey('vendas.id'), nullable=False)
-    isOpen = db.Column(db.Boolean, nullable=True)
+    idVenda = db.Column(ForeignKey('vendas.id'), nullable=True)
+    idCompra = db.Column(ForeignKey('compras.id'), nullable=True)
     idFormaPgto = db.Column(ForeignKey('formas_pgto.id'), nullable=False)
     descricao = db.Column(db.String, nullable=False)
     isPagarReceber = db.Column(db.Boolean, nullable=False) #confirmar se é string mesmo
@@ -32,15 +32,17 @@ class Financeiros(db.Model):
     dataPagamento = db.Column(db.Date, nullable=True)
     situacao = db.Column(db.Integer, nullable=False)
     parcelas = db.Column(db.Integer, nullable=False, default=1)
-    isOpen = db.Column(db.Boolean, nullable=True)
+
     idBanco = db.Column(ForeignKey('bancos.id'), nullable=False)
 
     banco = relationship('Bancos', backref='financeiros')
+    compra = relationship('Compras', backref='financeiros')
     venda = relationship('Vendas', backref='financeiros',cascade="all, delete")
     forma_pgto = relationship('Formas_pgto', backref='financeiros')
 
-    def __init__(self, idVenda, idBanco, idFormaPgto, descricao, isPagarReceber, valor, dataVencimento, dataCompetencia, dataPagamento, situacao, isOpen, parcelas):
+    def __init__(self, idVenda, idCompra, idBanco, idFormaPgto, descricao, isPagarReceber, valor, dataVencimento, dataCompetencia, dataPagamento, situacao, parcelas):
         self.idVenda = idVenda
+        self.idCompra = idCompra
         self.idBanco = idBanco
         self.idFormaPgto = idFormaPgto
         self.descricao = descricao
@@ -50,7 +52,6 @@ class Financeiros(db.Model):
         self.dataCompetencia = dataCompetencia
         self.dataPagamento = dataPagamento
         self.situacao = situacao
-        self.isOpen = isOpen
         self.parcelas = parcelas
 
 

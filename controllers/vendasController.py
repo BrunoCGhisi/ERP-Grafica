@@ -23,12 +23,10 @@ def vendasController():
             total = 0
             
             for fin in financeiro:
-                parcelas = fin.get("parcelas")  # Use .get() para evitar erros de chave inexistente
+                parcelas = fin.get("parcelas")  
                 forma_pgto = fin.get("idFormaPgto")
                 idBanco = fin.get("idBanco")
 
-
-            
 
             for objVp in vendas_produtos: # Dando post em vendas_produtos
                 idProduto = objVp['idProduto']
@@ -53,7 +51,7 @@ def vendasController():
             else:
                 descricao = "Venda: " + str(vendas.id)+ ", " + "Parcelas: " + str(parcelas)
            
-            postFinanceiro = Financeiros(vendas.id, idBanco, forma_pgto, descricao, 1, total, dataVencimento, vendas.dataAtual, "", 0, 0, parcelas)
+            postFinanceiro = Financeiros(vendas.id, None, idBanco, forma_pgto, descricao, 1, total, dataVencimento, vendas.dataAtual, None, 0, parcelas)
             db.session.add(postFinanceiro)
             #---------------------------------------------------
             
@@ -113,7 +111,7 @@ def vendasController():
                 data = request.get_json() #pega todos os dados 
                 dataVendas_produtos = data.get('vendas_produtos', []) #preciso pegar os ID's disso aqui, passa no json           
                 dataFinanceiros = data.get('financeiro', [])
-                print("DataFia", dataFinanceiros)
+                
 
                 # PUT EM FINANCEIROS ---------------------------
                 financeiros = Financeiros.query.filter(Financeiros.idVenda == id).all()
