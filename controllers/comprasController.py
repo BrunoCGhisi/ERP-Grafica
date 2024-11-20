@@ -16,6 +16,7 @@ def comprasController():
             compras = Compras(data['idFornecedor'], data['isCompraOS'], data['dataCompra'], data['numNota'], data['desconto'])
             compras_insumos = data.get('compras_insumos', [])
             financeiro = data.get('financeiros', [])
+            
 
             db.session.add(compras)
             db.session.flush()
@@ -104,7 +105,7 @@ def comprasController():
                 dataCompras_insumos = data.get('compras_insumos', []) #preciso pegar os ID's disso aqui, passa no json           
                 dataFinanceiros = data.get('financeiros', [])
                  # PUT EM FINANCEIROS ---------------------------
-                financeiros = Financeiros.query.filter(Financeiros.idVenda == id).all()
+                financeiros = Financeiros.query.filter(Financeiros.idCompra == id).all()
                 for i in range(len(financeiros)):
                     financeiro = financeiros[i]
                     fin_data = dataFinanceiros[i]
@@ -122,7 +123,7 @@ def comprasController():
                     financeiro.idBanco = fin_data.get('idBanco', financeiro.idBanco)
                     
                 # PUT EM VP ---------------------------
-                compras_insumos = Compras_insumos.query.filter(Compras_insumos.idVenda == id).all()
+                compras_insumos = Compras_insumos.query.filter(Compras_insumos.idCompra == id).all()
 
                 for i in range(len(compras_insumos)):
                     compra_insumo = compras_insumos[i]
@@ -160,14 +161,19 @@ def comprasController():
             newDataCompras_insumos = {'compras_insumos': [compra_produto.to_dict() for compra_produto in dataCompras_insumos]} #pegando cada obj compra, e tranformando num dicionario
             
             for produto in newDataCompras_insumos['compras_insumos']:
+               
                 if int(produto['idCompra']) == int(id):
+                    
                     prodObj = Compras_insumos.query.get(produto['id'])
                     db.session.delete(prodObj)
             
 
             finfilter = Financeiros.query.filter(Financeiros.idCompra == id).first()
-            db.session.delete(finfilter)
-
+            if finfilter is None:
+                pass    
+            else:
+                db.session.delete(finfilter)
+            
             if compra is None:
                 return{'error': 'compra não encontrado'}, 405
             
