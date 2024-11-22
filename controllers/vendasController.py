@@ -9,7 +9,7 @@ from datetime import timedelta, datetime
 
 descControl = 0
 def vendasController():
-
+    global descControl
 
     if request.method == 'POST':
         try:
@@ -68,8 +68,7 @@ def vendasController():
 
     elif request.method == 'GET':
         try:
-            descControl += 1
-            print(descControl)
+            
             dataVendas = Vendas.query.all()
            
             dataVendas_produtos = Vendas_produtos.query.all()
@@ -169,11 +168,20 @@ def vendasController():
 
                         dataInsumo = Insumos.query.get(dataProd.idInsumo)
                         desc = quantidade * (dataProd.largura * dataProd.comprimento)
+                        descControl = desc
 
                         dataInsumo.estoque -= dataInsumo.estoque - desc
 
                 if data.get('situacao', venda.situacao) < 2:
-                    pass
+                    allVendasProd = Vendas_produtos.query.filter(Vendas_produtos.idVenda == id).all()
+                    for obj in allVendasProd:
+                        idProduto = obj.idProduto
+                        quantidade = obj.quantidade
+
+                        dataProd = Produtos.query.get(idProduto)
+                        dataInsumo = Insumos.query.get(dataProd.idInsumo)
+                        desc = quantidade * (dataProd.largura * dataProd.comprimento)
+                        dataInsumo.estoque -= dataInsumo.estoque - desc
                 
                 venda.desconto = data.get('desconto', venda.desconto)
                 venda.situacao = data.get('situacao', venda.situacao)
