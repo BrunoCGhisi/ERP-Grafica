@@ -22,7 +22,7 @@ def insumosController():
     if request.method == 'POST':
         try:
             data = request.get_json()  # converte em Python
-            insumos = Insumos(data['nome'], data['estoque'], data['isActive'], data['valorM2'])
+            insumos = Insumos(data['nome'], data['estoque'], True, data['valorM2'])
             db.session.add(insumos)
             db.session.commit()
             return 'Insumos adicionados com sucesso!', 200
@@ -32,8 +32,10 @@ def insumosController():
     elif request.method == 'GET':
         try:
             data = Insumos.query.all()
-            newData = {'insumos': [insumo.to_dict() for insumo in data]}  # pegando cada obj insumo e transformando em dicionário
-            return newData, 200
+            newData = [insumo.to_dict() for insumo in data]  # pegando cada obj insumo e transformando em dicionário
+            insumosAtivos = [i for i in newData if i['isActive']] 
+
+            return insumosAtivos, 200
         except Exception as e:
             return f'Não foi possível buscar. Erro {str(e)}', 405
 
