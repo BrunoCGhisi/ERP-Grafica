@@ -7,7 +7,6 @@ from models.insumos import Insumos
 from models.financeiros import Financeiros
 from datetime import timedelta, datetime
 
-descControl = 0
 def vendasController():
     global descControl
 
@@ -141,6 +140,7 @@ def vendasController():
 
                     venda_produto.idProduto = vp_data.get('idProduto', venda_produto.idProduto)
                     venda_produto.quantidade = vp_data.get('quantidade', venda_produto.quantidade)
+                    print(venda_produto.quantidade)
 
                     db.session.commit()  
                 
@@ -171,17 +171,10 @@ def vendasController():
                         descControl = desc
 
                         dataInsumo.estoque -= dataInsumo.estoque - desc
+                if venda.situacao >= 2:
+                    if  data.get('situacao', venda.situacao) < 2:
+                        
 
-                if data.get('situacao', venda.situacao) < 2:
-                    allVendasProd = Vendas_produtos.query.filter(Vendas_produtos.idVenda == id).all()
-                    for obj in allVendasProd:
-                        idProduto = obj.idProduto
-                        quantidade = obj.quantidade
-
-                        dataProd = Produtos.query.get(idProduto)
-                        dataInsumo = Insumos.query.get(dataProd.idInsumo)
-                        desc = quantidade * (dataProd.largura * dataProd.comprimento)
-                        dataInsumo.estoque -= dataInsumo.estoque - desc
                 
                 venda.desconto = data.get('desconto', venda.desconto)
                 venda.situacao = data.get('situacao', venda.situacao)
