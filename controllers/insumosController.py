@@ -34,8 +34,10 @@ def insumosController():
             data = Insumos.query.all()
             newData = [insumo.to_dict() for insumo in data]  # pegando cada obj insumo e transformando em dicionário
             insumosAtivos = [i for i in newData if i['isActive']] 
+            insumosDesativos = [i for i in newData if not i['isActive']] 
 
-            return insumosAtivos, 200
+            return {'insumosAtivos': insumosAtivos,
+                    'insumosDesativos': insumosDesativos }, 200
         except Exception as e:
             return f'Não foi possível buscar. Erro {str(e)}', 405
 
