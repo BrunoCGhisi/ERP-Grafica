@@ -22,7 +22,7 @@ def insumosController():
     if request.method == 'POST':
         try:
             data = request.get_json()  # converte em Python
-            insumos = Insumos(data['nome'], data['estoque'], data['isActive'])
+            insumos = Insumos(data['nome'], data['estoque'], data['isActive'], data['valorM2'])
             db.session.add(insumos)
             db.session.commit()
             return 'Insumos adicionados com sucesso!', 200
@@ -49,6 +49,7 @@ def insumosController():
             insumo.nome = data.get('nome', insumo.nome)
             insumo.estoque = data.get('estoque', insumo.estoque)
             insumo.isActive = data.get('isActive', insumo.isActive)
+            insumo.valorM2 = data.get('valorM2', insumo.valorM2)
 
             db.session.commit()
             return "insumo atualizado com sucesso", 202
