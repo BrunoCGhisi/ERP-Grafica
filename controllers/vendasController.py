@@ -8,7 +8,6 @@ from models.financeiros import Financeiros
 from datetime import timedelta, datetime
 
 def vendasController():
-    global descControl
 
     if request.method == 'POST':
         try:
@@ -107,13 +106,14 @@ def vendasController():
 
     elif request.method == 'PUT':
             try:
+
+
                 id = request.args.to_dict().get('id')
                 venda = Vendas.query.get(id)
                 data = request.get_json() #pega todos os dados 
                 dataVendas_produtos = data.get('vendas_produtos', []) #preciso pegar os ID's disso aqui, passa no json           
                 dataFinanceiros = data.get('financeiro', [])
-                
-
+            
                 # PUT EM FINANCEIROS ---------------------------
                 financeiros = Financeiros.query.filter(Financeiros.idVenda == id).all()
                 for i in range(len(financeiros)):
@@ -131,7 +131,24 @@ def vendasController():
                          descricao = "Venda: " + str(venda.id)+ ", " + "À vista."   
                     financeiro.descricao = descricao
                     financeiro.idBanco = fin_data.get('idBanco', financeiro.idBanco)
-                # PUT EM VP ---------------------------
+
+                if venda.situacao >= 2:
+                    if  data.get('situacao', venda.situacao) < 2:
+                        allVendasProd = Vendas_produtos.query.filter(Vendas_produtos.idVenda == id).all()
+                    
+                        for obj in allVendasProd:
+                        
+                            idProduto = obj.idProduto
+                            quantidade = obj.quantidade
+
+                            dataProd = Produtos.query.get(idProduto)
+                            dataInsumo = Insumos.query.get(dataProd.idInsumo)
+                            desc = quantidade * (dataProd.largura * dataProd.comprimento)
+                            dataInsumo.estoque += dataInsumo.estoque + desc
+                            print("dataInsumo", desc)
+
+                # PUT EM VP ---------------------------            
+
                 vendas_produtos = Vendas_produtos.query.filter(Vendas_produtos.idVenda == id).all()
 
                 for i in range(len(vendas_produtos)):
@@ -167,15 +184,11 @@ def vendasController():
                                 return f'Estoque insuficiente para a produção do produto: {dataProd.nome} , reponha!', 200
 
                         dataInsumo = Insumos.query.get(dataProd.idInsumo)
+                        print(dataInsumo)
                         desc = quantidade * (dataProd.largura * dataProd.comprimento)
-                        descControl = desc
-
                         dataInsumo.estoque -= dataInsumo.estoque - desc
-                if venda.situacao >= 2:
-                    if  data.get('situacao', venda.situacao) < 2:
-                        
+                        print(desc)
 
-                
                 venda.desconto = data.get('desconto', venda.desconto)
                 venda.situacao = data.get('situacao', venda.situacao)
      
