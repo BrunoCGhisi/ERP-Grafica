@@ -29,12 +29,16 @@ def comprasController():
             for compra in compras_insumos:
                 
                 idInsumo = compra['idInsumo']
-
                 total += compra['preco'] * (compra['largura'] * compra['comprimento'])
 
                 preco = compra['preco']
                 largura = compra['largura']
                 comprimento = compra['comprimento']
+
+                insumos = Insumos.query.filter(Insumos.id == idInsumo).all()
+                for i in range(len(insumos)):
+                    insumo = insumos[i]
+                    insumo.estoque += largura * comprimento
 
                 postComprasInsumos = Compras_insumos(compras.id, idInsumo, preco, largura, comprimento)
                 db.session.add(postComprasInsumos)

@@ -149,7 +149,7 @@ def vendasController():
                 venda.dataAtual = data.get('dataAtual', venda.dataAtual)   
                 venda.isVendaOS = data.get('isVendaOS', venda.isVendaOS)   
 
-                if data.get('situacao', venda.situacao) == 4:
+                if data.get('situacao', venda.situacao) >= 4:
         
                     allVendasProd = Vendas_produtos.query.filter(Vendas_produtos.idVenda == id).all()
                     
@@ -166,9 +166,8 @@ def vendasController():
 
                         dataInsumo = Insumos.query.get(dataProd.idInsumo)
                         desc = quantidade * (dataProd.largura * dataProd.comprimento)
-                        
-                        dataInsumo.estoque = dataInsumo.estoque - desc
-                        
+
+                        dataInsumo.estoque -= dataInsumo.estoque - desc
                 
                 venda.desconto = data.get('desconto', venda.desconto)
                 venda.situacao = data.get('situacao', venda.situacao)
