@@ -20,12 +20,16 @@ def vendasController():
 
             db.session.add(vendas)
             db.session.flush() # para conseguir pegar id
-            total = 0
+          
             
             for fin in financeiro:
                 parcelas = fin.get("parcelas")  
                 forma_pgto = fin.get("idFormaPgto")
                 idBanco = fin.get("idBanco")
+                if data['desconto'] != 0 or data['desconto'] != None:
+                    total = fin.get("total") * (1 - data['desconto'] / 100)
+                else:
+                    total = fin.get("total")
 
 
             for objVp in vendas_produtos: # Dando post em vendas_produtos
@@ -38,7 +42,6 @@ def vendasController():
                     for ins in insumos:
                         if ins.estoque <= gastoEstoque:
                             info = f'{ins.nome} não possui estoque o suficiente! Reponha para produção.'
-                    total += quantidade * item.preco # calcula o valor total da venda
                     
                 postVendasProdutos = Vendas_produtos(vendas.id, idProduto, quantidade)
                 db.session.add(postVendasProdutos)
@@ -119,11 +122,19 @@ def vendasController():
                 for i in range(len(financeiros)):
                     financeiro = financeiros[i]
                     fin_data = dataFinanceiros[i]
-                    print(fin_data)
-
+                    
+                    venda.desconto = data.get('desconto', venda.desconto)
                     financeiro.parcelas = fin_data.get('parcelas', financeiro.parcelas)
                     financeiro.idFormaPgto = fin_data.get('idFormaPgto', financeiro.idFormaPgto)
-                    print(financeiro.idFormaPgto)
+                    venda.desconto = data.get('desconto', venda.desconto)
+
+                    if data.get('desconto', venda.desconto) != 0 or data.get('desconto', venda.desconto) != None:
+                        valorTotal = fin_data.get('valor', financeiro.valor) * (1- data.get('desconto', venda.desconto) / 100 )
+                        financeiro.valor = valorTotal
+                    else:
+                        financeiro.valor = fin_data.get('valor', financeiro.valor)
+                    
+                        
 
                     if financeiro.idFormaPgto != 1 and financeiro.idFormaPgto != 2 and financeiro.idFormaPgto != 4:     
                         descricao = "Venda: " + str(id)+ ", " + "Parcelas: " + str(fin_data.get('parcelas', financeiro.parcelas))

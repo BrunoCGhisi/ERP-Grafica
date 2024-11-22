@@ -29,7 +29,11 @@ def comprasController():
             for compra in compras_insumos:
                 
                 idInsumo = compra['idInsumo']
-                total += compra['preco'] * (compra['largura'] * compra['comprimento'])
+
+                if data['desconto'] != 0 or data['desconto'] != None:
+                    total = (compra['preco'] * (compra['largura'] * compra['comprimento'])) * (1 - data['desconto'] / 100)
+                else:
+                    total = (compra['preco'] * (compra['largura'] * compra['comprimento']))
 
                 preco = compra['preco']
                 largura = compra['largura']
@@ -117,7 +121,12 @@ def comprasController():
 
                     financeiro.parcelas = fin_data.get('parcelas', financeiro.parcelas)
                     financeiro.idFormaPgto = fin_data.get('idFormaPgto', financeiro.idFormaPgto)
-                    print(financeiro.idFormaPgto)
+                    compra.desconto = data.get('desconto', compra.desconto)
+                    if data.get('desconto', compra.desconto) != 0 or data.get('desconto', compra.desconto) != None:
+                        valorTotal = fin_data.get('valor', financeiro.valor) * (1- data.get('desconto', compra.desconto) / 100 )
+                        financeiro.valor = valorTotal
+                    else:
+                        financeiro.valor = fin_data.get('valor', financeiro.valor)
 
                     if financeiro.idFormaPgto != 1 and financeiro.idFormaPgto != 2 and financeiro.idFormaPgto != 4:     
                         descricao = "Compra: " + str(id)+ ", " + "Parcelas: " + str(fin_data.get('parcelas', financeiro.parcelas))
@@ -146,9 +155,7 @@ def comprasController():
                 compra.isCompraOS = data.get('isCompraOS', compra.isCompraOS)   
                 compra.dataCompra = data.get('dataCompra', compra.dataCompra)   
                 compra.numNota = data.get('numNota', compra.numNota)   
-                compra.desconto = data.get('desconto', compra.desconto)
-  
-
+               
                 db.session.commit()
                 return "compra atualizado com sucesso", 202
 
