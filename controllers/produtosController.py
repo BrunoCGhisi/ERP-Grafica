@@ -49,7 +49,7 @@ def produtosController():
         try:
             data = request.get_json() # converte em python
 
-            produtos = Produtos(data['nome'], data['tipo'], data['keyWord'], data['idInsumo'], data['idCategoria'], data['preco'], data['largura'], data['comprimento'])
+            produtos = Produtos(data['nome'], data['tipo'], data['keyWord'], data['idInsumo'], data['idCategoria'], data['preco'], data['largura'], data['comprimento'], True)
             db.session.add(produtos)
             db.session.commit()
             return 'Produtos adicionados com sucesso!', 200
@@ -60,9 +60,13 @@ def produtosController():
     elif request.method == 'GET':
         try:
             data = Produtos.query.all()
-            newData = {'produtos': [produto.to_dict() for produto in data]} #pegando cada obj produto, e tranformando num dicionario
-            return newData, 200
-        
+            newData = [produto.to_dict() for produto in data] #pegando cada obj produto, e 
+            produtosAtivos = [i for i in newData if i['isActive']] 
+            produtosDesativos = [i for i in newData if not i['isActive']] 
+
+            return {'produtosAtivos': produtosAtivos,
+                    'produtosDesativos': produtosDesativos }, 200
+            
         except Exception as e:
             return f'Não foi possível buscar. Erro {str(e)}', 405
         
@@ -84,7 +88,8 @@ def produtosController():
                 produto.idCategoria = data.get('idCategoria', produto.idCategoria)   
                 produto.preco = data.get('preco', produto.preco)
                 produto.largura = data.get('largura', produto.largura)    
-                produto.comprimento = data.get('comprimento', produto.comprimento)    
+                produto.comprimento = data.get('comprimento', produto.comprimento)  
+                produto.isActive = data.get('isActive', produto.isActive)  
 
                 db.session.commit()
                 return "produto atualizado com sucesso", 202

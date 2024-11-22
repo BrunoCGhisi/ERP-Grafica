@@ -19,7 +19,7 @@ class Clientes(db.Model):
             'estado': self.estado,
             'numero': self.numero,
             'cidade': self.cidade,
-            'complemento': self.complemento
+            'complemento': self.complemento,
             }
 
     id = db.Column(db.Integer, primary_key = True, nullable=False)
@@ -39,7 +39,7 @@ class Clientes(db.Model):
     cidade = db.Column(db.String, nullable=True)
     complemento = db.Column(db.String, nullable=True)
 
-    def __init__(self, nome, cpfCnpj, email, telefone, isFornecedor, nomeFantasia, dataCadastro, numIe, statusIe, endereco, cep, estado, numero, cidade, complemento):
+    def __init__(self, nome, cpfCnpj, email, telefone, isFornecedor, nomeFantasia, dataCadastro, numIe, statusIe, endereco, cep, estado, numero, cidade, complemento, isActive):
         self.nome = nome
         self.cpfCnpj = cpfCnpj
         self.email = email
