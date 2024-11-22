@@ -7,7 +7,9 @@ from models.insumos import Insumos
 from models.financeiros import Financeiros
 from datetime import timedelta, datetime
 
+descControl = 0
 def vendasController():
+
 
     if request.method == 'POST':
         try:
@@ -66,6 +68,8 @@ def vendasController():
 
     elif request.method == 'GET':
         try:
+            descControl += 1
+            print(descControl)
             dataVendas = Vendas.query.all()
            
             dataVendas_produtos = Vendas_produtos.query.all()
@@ -106,7 +110,6 @@ def vendasController():
     elif request.method == 'PUT':
             try:
                 id = request.args.to_dict().get('id')
-                
                 venda = Vendas.query.get(id)
                 data = request.get_json() #pega todos os dados 
                 dataVendas_produtos = data.get('vendas_produtos', []) #preciso pegar os ID's disso aqui, passa no json           
@@ -149,7 +152,7 @@ def vendasController():
                 venda.dataAtual = data.get('dataAtual', venda.dataAtual)   
                 venda.isVendaOS = data.get('isVendaOS', venda.isVendaOS)   
 
-                if data.get('situacao', venda.situacao) >= 4:
+                if data.get('situacao', venda.situacao) >= 2:
         
                     allVendasProd = Vendas_produtos.query.filter(Vendas_produtos.idVenda == id).all()
                     
@@ -168,6 +171,9 @@ def vendasController():
                         desc = quantidade * (dataProd.largura * dataProd.comprimento)
 
                         dataInsumo.estoque -= dataInsumo.estoque - desc
+
+                if data.get('situacao', venda.situacao) < 2:
+                    pass
                 
                 venda.desconto = data.get('desconto', venda.desconto)
                 venda.situacao = data.get('situacao', venda.situacao)
