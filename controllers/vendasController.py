@@ -201,7 +201,6 @@ def vendasController():
             except Exception as e:
                 return f"Não foi possível atualizar a venda. Erro:{str(e)}", 405
             
-
     elif request.method == 'DELETE':
         try:
             data = int(request.args.to_dict().get('id'))  # Obtém o ID da venda a ser deletada
