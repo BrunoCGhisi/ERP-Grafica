@@ -144,7 +144,7 @@ def vendasController():
                             dataProd = Produtos.query.get(idProduto)
                             dataInsumo = Insumos.query.get(dataProd.idInsumo)
                             desc = quantidade * (dataProd.largura * dataProd.comprimento)
-                            dataInsumo.estoque += dataInsumo.estoque + desc
+                            dataInsumo.estoque += desc
                             print("dataInsumo", desc)
 
                 # PUT EM VP ---------------------------            
@@ -186,7 +186,9 @@ def vendasController():
                         dataInsumo = Insumos.query.get(dataProd.idInsumo)
                         print(dataInsumo)
                         desc = quantidade * (dataProd.largura * dataProd.comprimento)
-                        dataInsumo.estoque -= dataInsumo.estoque - desc
+                        print("1", dataInsumo.estoque)
+                        dataInsumo.estoque -= desc
+                        print("2", dataInsumo.estoque)
                         print(desc)
 
                 venda.desconto = data.get('desconto', venda.desconto)
