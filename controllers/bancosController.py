@@ -21,7 +21,7 @@ def bancosController():
     if request.method == 'POST':
         try:
             data = request.get_json()  # Converte a requisição JSON para Python
-            bancos = Bancos(data['nome'], data['valorTotal'])  # Cria o objeto do modelo
+            bancos = Bancos(data['nome'], data['valorTotal'], True  )  # Cria o objeto do modelo
             db.session.add(bancos)
             db.session.commit()
             return "Banco adicionado com sucesso!", 200
@@ -32,9 +32,13 @@ def bancosController():
         try:
             data = Bancos.query.all()
             #newData = {'bancos': [banco.to_dict() for banco in data]}  # Transformando para JSON
-            getBanco = [banco.to_dict() for banco in data]
+            getBancos = [banco.to_dict() for banco in data]
+            getBanco = [i for i in getBancos if i['isActive']] 
+            bancoDesativos = [i for i in getBancos if not i['isActive']] 
+
             return {
-                "getBancos": getBanco
+                "getBancos": getBanco,
+                "bancoDesativos": bancoDesativos
             }, 200
         except Exception as e:
             return f'Não foi possível buscar. Erro: {str(e)}', 405
@@ -50,6 +54,7 @@ def bancosController():
 
             banco.nome = data.get('nome', banco.nome)
             banco.valorTotal = data.get('valorTotal', banco.valorTotal)
+            banco.isActive = data.get('isActive', banco.isActive)
 
             db.session.commit()
             return "Banco atualizado com sucesso", 202
