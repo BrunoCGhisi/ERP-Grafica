@@ -14,6 +14,8 @@ def comprasController():
             total = 0
             data = request.get_json() # converte em python
             compras = Compras(data['idFornecedor'], data['isCompraOS'], data['dataCompra'], data['numNota'], data['desconto'])
+            print("DESCONTO",data['desconto'])
+            print(compras.desconto)
             compras_insumos = data.get('compras_insumos', [])
             financeiro = data.get('financeiros', [])
             
@@ -58,7 +60,7 @@ def comprasController():
             postFinanceiro = Financeiros(None, compras.id, idBanco, forma_pgto, descricao, 0, total, dataVencimento, compras.dataCompra, None, 0, parcelas)
             db.session.add(postFinanceiro)
                 #---------------------------------------------------
-
+            print("DESCONTOAA",data['desconto'])
             db.session.commit()
             return 'Compras adicionados com sucesso!', 200
         except Exception as e:

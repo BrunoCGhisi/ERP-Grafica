@@ -28,5 +28,6 @@ class Compras(db.Model):
         self.isCompraOS = isCompraOS
         self.dataCompra = dataCompra
         self.numNota = numNota
+        self.desconto = desconto
 
 
