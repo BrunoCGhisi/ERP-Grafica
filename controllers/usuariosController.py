@@ -9,7 +9,7 @@ def usuariosController():
     if request.method == 'POST':
         try:
             data = request.get_json() # converte em python
-            usuarios = Usuarios(data['nome'], data['email'], data['senha'], data['isAdm'])
+            usuarios = Usuarios(data['nome'], data['email'], data['senha'], data['isAdm'], True)
             db.session.add(usuarios)
             db.session.commit()
             return 'Usuarios adicionados com sucesso!', 200
@@ -20,8 +20,11 @@ def usuariosController():
     elif request.method == 'GET':
         try:
             data = Usuarios.query.all()
-            newData = {'usuarios': [usuario.to_dict() for usuario in data]} #pegando cada obj usuario, e tranformando num dicionario
-            return newData, 200
+            newData = [usuario.to_dict() for usuario in data] #pegando cada obj usuario, e tranformando num dicionario
+            usuariosAtivos = [i for i in newData if i['isActive']] 
+            usuariosDesativos = [i for i in newData if not i['isActive']] 
+            return {'usuariosAtivos': usuariosAtivos, 'usuariosDesativos': usuariosDesativos,
+            }, 200
         
         except Exception as e:
             return f'Não foi possível buscar. Erro {str(e)}', 405
@@ -40,7 +43,8 @@ def usuariosController():
                 usuario.nome = data.get('nome', usuario.nome)
                 usuario.email = data.get('email', usuario.email)   
                 usuario.senha = generate_password_hash(data.get('senha'))
-                usuario.isAdm = data.get('isAdm', usuario.isAdm)   
+                usuario.isAdm = data.get('isAdm', usuario.isAdm) 
+                usuario.isActive = data.get('isActive', usuario.isActive)     
 
                 db.session.commit()
                 return "Usuário atualizado com sucesso", 202
