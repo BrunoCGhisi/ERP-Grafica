@@ -57,10 +57,14 @@ def comprasController():
                 descricao = "Compra: " + str(compras.id)+ ", " + "À vista."       
             else:
                 descricao = "Compra: " + str(compras.id)+ ", " + "Parcelas: " + str(parcelas) ,
-            postFinanceiro = Financeiros(None, compras.id, idBanco, forma_pgto, descricao, 0, total, dataVencimento, compras.dataCompra, None, 0, parcelas)
+            
+            if data['isVendaOS'] == 0:
+                postFinanceiro = Financeiros(None, compras.id, idBanco, forma_pgto, descricao, 0, total, dataVencimento, compras.dataCompra, None, 1, parcelas)
+            elif data['isVendaOS'] == 1:
+                 postFinanceiro = Financeiros(None, compras.id, idBanco, forma_pgto, descricao, 0, total, dataVencimento, compras.dataCompra, None, 0, parcelas)
             db.session.add(postFinanceiro)
                 #---------------------------------------------------
-            print("DESCONTOAA",data['desconto'])
+            
             db.session.commit()
             return 'Compras adicionados com sucesso!', 200
         except Exception as e:
@@ -123,8 +127,9 @@ def comprasController():
 
                     financeiro.parcelas = fin_data.get('parcelas', financeiro.parcelas)
                     financeiro.idFormaPgto = fin_data.get('idFormaPgto', financeiro.idFormaPgto)
+                    lastDesc = compra.desconto
                     compra.desconto = data.get('desconto', compra.desconto)
-                    if data.get('desconto', compra.desconto) != 0 or data.get('desconto', compra.desconto) != None:
+                    if data.get('desconto', compra.desconto) != 0 and data.get('desconto', compra.desconto) != None and lastDesc != data.get('desconto', compra.desconto):
                         valorTotal = fin_data.get('valor', financeiro.valor) * (1- data.get('desconto', compra.desconto) / 100 )
                         financeiro.valor = valorTotal
                     else:

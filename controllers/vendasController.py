@@ -7,6 +7,12 @@ from models.insumos import Insumos
 from models.financeiros import Financeiros
 from datetime import timedelta, datetime
 
+# legenda
+# 1- a pagar
+# 2- a receber
+# 3- pago
+# 4- recebido
+# 0- orçamento
 def vendasController():
 
     if request.method == 'POST':
@@ -50,20 +56,22 @@ def vendasController():
                 postVendasProdutos = Vendas_produtos(vendas.id, idProduto, quantidade)
                 db.session.add(postVendasProdutos)
 
-            if data['isVendaOS'] == 0:
-                # FINANCEIRO -------------------------------------- RECEBER
-                dataVenda = datetime.strptime(vendas.dataAtual, "%Y-%m-%d").date()
-                dataVencimento = dataVenda + timedelta(days=30)
-                if forma_pgto == 1 or forma_pgto == 2 or forma_pgto == 4:
-                    descricao = "Venda: " + str(vendas.id)+ ", " + "À vista."       
-                else:
-                    descricao = "Venda: " + str(vendas.id)+ ", " + "Parcelas: " + str(parcelas)
             
+            # FINANCEIRO -------------------------------------- RECEBER
+            dataVenda = datetime.strptime(vendas.dataAtual, "%Y-%m-%d").date()
+            dataVencimento = dataVenda + timedelta(days=30)
+            if forma_pgto == 1 or forma_pgto == 2 or forma_pgto == 4:
+                descricao = "Venda: " + str(vendas.id)+ ", " + "À vista."       
+            else:
+                descricao = "Venda: " + str(vendas.id)+ ", " + "Parcelas: " + str(parcelas)
+
+            if data['isVendaOS'] == 0:
+                postFinanceiro = Financeiros(vendas.id, None, idBanco, forma_pgto, descricao, 1, valor, dataVencimento, vendas.dataAtual, None, 2, parcelas)
+            elif data['isVendaOS'] == 1:
                 postFinanceiro = Financeiros(vendas.id, None, idBanco, forma_pgto, descricao, 1, valor, dataVencimento, vendas.dataAtual, None, 0, parcelas)
-                db.session.add(postFinanceiro)
+            db.session.add(postFinanceiro)
                 #---------------------------------------------------
 
-            
             db.session.commit()
             return {
                 "message":  'Vendas adicionados com sucesso!',
@@ -120,65 +128,41 @@ def vendasController():
                 id = request.args.to_dict().get('id')
                 venda = Vendas.query.get(id)
                 data = request.get_json() #pega todos os dados 
-                financeiroData = data.get('financeiro', [])
                 dataVendas_produtos = data.get('vendas_produtos', []) #preciso pegar os ID's disso aqui, passa no json           
                 dataFinanceiros = data.get('financeiro', [])
             
-                
-                print("Aqui", data)
                 # PUT EM FINANCEIROS ---------------------------
                 financeiros = Financeiros.query.filter(Financeiros.idVenda == id).all()
-                
-                if len(financeiros) > 0:
+
+                for i in range(len(financeiros)):
+                    financeiro = financeiros[i]
+                    fin_data = dataFinanceiros[i]
                     
-                    for i in range(len(financeiros)):
-                        print("Aqui aaa")
-                        financeiro = financeiros[i]
-                        fin_data = dataFinanceiros[i]
-                        
-                        venda.desconto = data.get('desconto', venda.desconto)
-                        financeiro.parcelas = fin_data.get('parcelas', financeiro.parcelas)
-                        financeiro.idFormaPgto = fin_data.get('idFormaPgto', financeiro.idFormaPgto)
-                        venda.desconto = data.get('desconto', venda.desconto)
+                    financeiro.parcelas = fin_data.get('parcelas', financeiro.parcelas)
+                    financeiro.idFormaPgto = fin_data.get('idFormaPgto', financeiro.idFormaPgto)
+                    lastDesc = venda.desconto
+                    
+                    venda.desconto = data.get('desconto', venda.desconto)
+                    
 
-                        if data.get('desconto', venda.desconto) != 0 or data.get('desconto', venda.desconto) != None:
-                            valorTotal = fin_data.get('valor', financeiro.valor) * (1- data.get('desconto', venda.desconto) / 100 )
-                            financeiro.valor = valorTotal
-                        else:
-                            financeiro.valor = fin_data.get('valor', financeiro.valor)
-                        
-                            
-
-                        if financeiro.idFormaPgto != 1 and financeiro.idFormaPgto != 2 and financeiro.idFormaPgto != 4:     
-                            descricao = "Venda: " + str(id)+ ", " + "Parcelas: " + str(fin_data.get('parcelas', financeiro.parcelas))
-                        else:
-                            descricao = "Venda: " + str(venda.id)+ ", " + "À vista."   
-                        financeiro.descricao = descricao
-                        financeiro.idBanco = fin_data.get('idBanco', financeiro.idBanco)
-                    print("Aqui", data)
-                    for fin in financeiroData:
-                            
-                            parcelas = fin.get("parcelas")  
-                            forma_pgto = fin.get("idFormaPgto")
-                            idBanco = fin.get("idBanco")
-
-                            if data['desconto'] != 0 and data['desconto'] != None:
-                                
-                                valor = fin.get("valor") * (1 - data['desconto'] / 100)
-                            else:
-                                valor = fin.get("valor")
-
-                elif venda.isVendaOS == 1 and data.get('isVendaOS', venda.isVendaOS) == 0:
-                    dataVenda = datetime.strptime(venda.dataAtual, "%Y-%m-%d").date()
-                    dataVencimento = dataVenda + timedelta(days=30)
-                    if forma_pgto == 1 or forma_pgto == 2 or forma_pgto == 4:
-                        descricao = "Venda: " + str(venda.id)+ ", " + "À vista."       
+                    if data.get('desconto', venda.desconto) != 0 and data.get('desconto', venda.desconto) != None and lastDesc != data.get('desconto', venda.desconto) :
+                        valorTotal = fin_data.get('valor', financeiro.valor) * (1- data.get('desconto', venda.desconto) / 100 )
+                        financeiro.valor = valorTotal
                     else:
-                        descricao = "Venda: " + str(venda.id)+ ", " + "Parcelas: " + str(parcelas)
-                
-                    postFinanceiro = Financeiros(venda.id, None, idBanco, forma_pgto, descricao, 1, valor, dataVencimento, venda.dataAtual, None, 0, parcelas)
-                    db.session.add(postFinanceiro)
-                
+                        financeiro.valor = fin_data.get('valor', financeiro.valor)
+                    
+                        
+
+                    if financeiro.idFormaPgto != 1 and financeiro.idFormaPgto != 2 and financeiro.idFormaPgto != 4:     
+                        descricao = "Venda: " + str(id)+ ", " + "Parcelas: " + str(fin_data.get('parcelas', financeiro.parcelas))
+                    else:
+                        descricao = "Venda: " + str(venda.id)+ ", " + "À vista."   
+                    financeiro.descricao = descricao
+                    financeiro.idBanco = fin_data.get('idBanco', financeiro.idBanco)
+
+                    if venda.isVendaOS == 1 and data.get('isVendaOS', venda.isVendaOS) == 0:
+                        financeiro.situacao = 2
+                    
                 venda.isVendaOS = data.get('isVendaOS', venda.isVendaOS)
                 
 
