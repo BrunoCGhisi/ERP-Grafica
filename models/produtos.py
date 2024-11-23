@@ -12,7 +12,6 @@ class Produtos(db.Model):
             'keyWord': self.keyWord,
             'idInsumo': self.idInsumo,
             'idCategoria': self.idCategoria,
-            'preco': self.preco, #conferir
             'largura': self.largura,
             'comprimento': self.comprimento,
             'isActive': self.isActive
@@ -24,7 +23,6 @@ class Produtos(db.Model):
     keyWord = db.Column(db.String, nullable=True)
     idInsumo = db.Column(ForeignKey('insumos.id'), nullable=False)
     idCategoria = db.Column(ForeignKey('categorias_produtos.id'), nullable=False)
-    preco = db.Column(db.Float, nullable=False)
     isActive = db.Column(db.Boolean, nullable=False)
     largura = db.Column(db.Float, nullable=False)
     comprimento = db.Column(db.Float, nullable=False)
@@ -32,13 +30,12 @@ class Produtos(db.Model):
     categoria = relationship('Categorias_produtos', backref='produtos')
     insumo = relationship('Insumos', backref='produtos')
 
-    def __init__(self, nome, tipo, keyWord, idInsumo, idCategoria, preco, largura, comprimento, isActive):
+    def __init__(self, nome, tipo, keyWord, idInsumo, idCategoria, largura, comprimento, isActive):
         self.nome = nome
         self.tipo = tipo
         self.keyWord = keyWord
         self.idInsumo = idInsumo
         self.idCategoria = idCategoria
-        self.preco = preco
         self.largura = largura
         self.comprimento = comprimento
         self.isActive = isActive
