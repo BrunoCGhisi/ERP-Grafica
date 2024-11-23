@@ -23,13 +23,18 @@ def vendasController():
           
             
             for fin in financeiro:
+                
                 parcelas = fin.get("parcelas")  
                 forma_pgto = fin.get("idFormaPgto")
                 idBanco = fin.get("idBanco")
-                if data['desconto'] != 0 or data['desconto'] != None:
-                    total = fin.get("total") * (1 - data['desconto'] / 100)
+
+                print(fin.get("valor"))
+
+                if data['desconto'] != 0 and data['desconto'] != None:
+                    
+                    valor = fin.get("valor") * (1 - data['desconto'] / 100)
                 else:
-                    total = fin.get("total")
+                    valor = fin.get("valor")
 
 
             for objVp in vendas_produtos: # Dando post em vendas_produtos
@@ -54,7 +59,7 @@ def vendasController():
             else:
                 descricao = "Venda: " + str(vendas.id)+ ", " + "Parcelas: " + str(parcelas)
            
-            postFinanceiro = Financeiros(vendas.id, None, idBanco, forma_pgto, descricao, 1, total, dataVencimento, vendas.dataAtual, None, 0, parcelas)
+            postFinanceiro = Financeiros(vendas.id, None, idBanco, forma_pgto, descricao, 1, valor, dataVencimento, vendas.dataAtual, None, 0, parcelas)
             db.session.add(postFinanceiro)
             #---------------------------------------------------
             
