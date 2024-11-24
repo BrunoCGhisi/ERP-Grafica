@@ -42,23 +42,17 @@ def financeirosController():
                     return{'error': 'financeiro não encontrado'}, 405
                 
                
-                financeiro.isPagarReceber = data.get('isPagarReceber', financeiro.isPagarReceber)   
-               
                 financeiro.dataVencimento = data.get('dataVencimento', financeiro.dataVencimento)
                 financeiro.dataCompetencia = data.get('dataCompetencia', financeiro.dataCompetencia)       
-     
                 financeiro.situacao = data.get('situacao', financeiro.situacao)
 
-                if data.get('situacao', financeiro.situacao) == 1:
+                if data.get('situacao', financeiro.situacao) == 4:
                     financeiro.dataPagamento =  date.today()
                     banco.valorTotal += financeiro.valor                
 
-                if data.get('situacao', financeiro.situacao) == 0:
+                if data.get('situacao', financeiro.situacao) == 2:
                     banco.valorTotal -= financeiro.valor 
                     financeiro.dataPagamento = ""
-
-                financeiro.isOpen = data.get('isOpen', financeiro.isOpen)     
-                  
 
                 db.session.commit()
                 return "financeiro atualizado com sucesso", 202
