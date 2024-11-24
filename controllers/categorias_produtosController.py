@@ -21,7 +21,7 @@ def Categorias_produtosController():
     if request.method == 'POST':
         try:
             data = request.get_json() # converte em python
-            categorias_produtos = Categorias_produtos(data['categoria'])
+            categorias_produtos = Categorias_produtos(data['categoria'], True)
             db.session.add(categorias_produtos)
             db.session.commit()
             return "Categorias_produtos adicionados com sucesso!", 200
@@ -32,8 +32,10 @@ def Categorias_produtosController():
     elif request.method == 'GET':
         try:
             data = Categorias_produtos.query.all()
-            newData = {'categorias_produtos': [categoria_produto.to_dict() for categoria_produto in data]} #pegando cada obj categoria_produto, e tranformando num dicionario
-            return newData, 200
+            newData = [categoria_produto.to_dict() for categoria_produto in data] #pegando cada obj categoria_produto, e tranformando num dicionario
+            catProdAtivos = [i for i in newData if i['isActive']] 
+            catProdDesativos = [i for i in newData if not i['isActive']] 
+            return {'catProdAtivos': catProdAtivos, 'catProdDesativos': catProdDesativos}, 200
         
         except Exception as e:
             return f"Não foi possível buscar. Erro {str(e)}", 405
@@ -49,6 +51,7 @@ def Categorias_produtosController():
                     return{'error': 'categoria_produto não encontrado'}, 405
                 
                 categoria_produto.categoria  = data.get('categoria', categoria_produto.categoria )
+                categoria_produto.isActive  = data.get('isActive', categoria_produto.categoria )
 
                 db.session.commit()
                 return "categoria_produto atualizado com sucesso", 202

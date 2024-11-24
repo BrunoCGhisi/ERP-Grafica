@@ -44,7 +44,7 @@ def comprasController():
                 insumos = Insumos.query.filter(Insumos.id == idInsumo).all()
                 for i in range(len(insumos)):
                     insumo = insumos[i]
-                    insumo.estoque += largura * comprimento
+                    insumo.estoque += (largura * comprimento)
 
                 postComprasInsumos = Compras_insumos(compras.id, idInsumo, preco, largura, comprimento)
                 db.session.add(postComprasInsumos)
@@ -58,9 +58,9 @@ def comprasController():
             else:
                 descricao = "Compra: " + str(compras.id)+ ", " + "Parcelas: " + str(parcelas) ,
             
-            if data['isVendaOS'] == 1:
+            if data['isCompraOS'] == 1:
                 postFinanceiro = Financeiros(None, compras.id, idBanco, forma_pgto, descricao, 0, total, dataVencimento, compras.dataCompra, None, 1, parcelas)
-            elif data['isVendaOS'] == 0:
+            elif data['isCompraOS'] == 0:
                  postFinanceiro = Financeiros(None, compras.id, idBanco, forma_pgto, descricao, 0, total, dataVencimento, compras.dataCompra, None, 0, parcelas)
             db.session.add(postFinanceiro)
                 #---------------------------------------------------
@@ -141,6 +141,10 @@ def comprasController():
                          descricao = "Compra: " + str(compra.id)+ ", " + "À vista."   
                     financeiro.descricao = descricao
                     financeiro.idBanco = fin_data.get('idBanco', financeiro.idBanco)
+
+                    if compra.isCompraOS == 0 and data.get('isCompraOS', compra.isCompraOS) == 1:
+                        financeiro.situacao = 2
+                    
                     
                 # PUT EM VP ---------------------------
                 compras_insumos = Compras_insumos.query.filter(Compras_insumos.idCompra == id).all()

@@ -65,9 +65,9 @@ def vendasController():
             else:
                 descricao = "Venda: " + str(vendas.id)+ ", " + "Parcelas: " + str(parcelas)
 
-            if data['isVendaOS'] == 0:
+            if data['isVendaOS'] == 1:
                 postFinanceiro = Financeiros(vendas.id, None, idBanco, forma_pgto, descricao, 1, valor, dataVencimento, vendas.dataAtual, None, 2, parcelas)
-            elif data['isVendaOS'] == 1:
+            elif data['isVendaOS'] == 0:
                 postFinanceiro = Financeiros(vendas.id, None, idBanco, forma_pgto, descricao, 1, valor, dataVencimento, vendas.dataAtual, None, 0, parcelas)
             db.session.add(postFinanceiro)
                 #---------------------------------------------------
@@ -152,7 +152,6 @@ def vendasController():
                         financeiro.valor = fin_data.get('valor', financeiro.valor)
                     
                         
-
                     if financeiro.idFormaPgto != 1 and financeiro.idFormaPgto != 2 and financeiro.idFormaPgto != 4:     
                         descricao = "Venda: " + str(id)+ ", " + "Parcelas: " + str(fin_data.get('parcelas', financeiro.parcelas))
                     else:
@@ -160,7 +159,7 @@ def vendasController():
                     financeiro.descricao = descricao
                     financeiro.idBanco = fin_data.get('idBanco', financeiro.idBanco)
 
-                    if venda.isVendaOS == 1 and data.get('isVendaOS', venda.isVendaOS) == 0:
+                    if venda.isVendaOS == 0 and data.get('isVendaOS', venda.isVendaOS) == 1:
                         financeiro.situacao = 2
                     
                 venda.isVendaOS = data.get('isVendaOS', venda.isVendaOS)
