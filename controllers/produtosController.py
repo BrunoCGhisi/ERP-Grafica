@@ -48,8 +48,9 @@ def produtosController():
     if request.method == 'POST':
         try:
             data = request.get_json() # converte em python
-
+            print("aaaaaaaaaaa", data['largura'])
             produtos = Produtos(data['nome'], data['tipo'], data['keyWord'], data['idInsumo'], data['idCategoria'], data['largura'], data['comprimento'], True)
+            print("aaaaaaaaaaa",data['largura'])
             db.session.add(produtos)
             db.session.commit()
             return 'Produtos adicionados com sucesso!', 200

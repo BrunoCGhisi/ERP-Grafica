@@ -42,7 +42,7 @@ def clientesController():
         try:
             data = request.get_json() # converte em python
             print(data)
-            clientes = Clientes(data['nome'], data['cpfCnpj'], data['email'], data['telefone'], data['isFornecedor'], data['nomeFantasia'], date.today(),  data['numIe'], data['statusIe'], data['endereco'], data['cep'], data['estado'], data['numero'], data['cidade'], data['complemento'])
+            clientes = Clientes(data['nome'], data['cpfCnpj'], data['email'], data['telefone'], data['isFornecedor'], data['nomeFantasia'], date.today(),  data['numIe'], data['statusIe'], data['endereco'], data['cep'], data['estado'], data['numero'], data['cidade'], data['complemento'], True)
 
             db.session.add(clientes)
             db.session.commit()
@@ -87,7 +87,8 @@ def clientesController():
                 cliente.estado = data.get('estado', cliente.estado)   
                 cliente.numero = data.get('numero', cliente.numero)   
                 cliente.cidade = data.get('cidade', cliente.cidade)   
-                cliente.complemento = data.get('complemento', cliente.complemento)   
+                cliente.complemento = data.get('complemento', cliente.complemento) 
+                cliente.isActive = data.get('isActive', cliente.isActive)   
 
                 db.session.commit()
                 return "cliente atualizado com sucesso", 202

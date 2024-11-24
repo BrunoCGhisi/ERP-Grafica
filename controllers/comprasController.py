@@ -58,9 +58,9 @@ def comprasController():
             else:
                 descricao = "Compra: " + str(compras.id)+ ", " + "Parcelas: " + str(parcelas) ,
             
-            if data['isVendaOS'] == 0:
+            if data['isVendaOS'] == 1:
                 postFinanceiro = Financeiros(None, compras.id, idBanco, forma_pgto, descricao, 0, total, dataVencimento, compras.dataCompra, None, 1, parcelas)
-            elif data['isVendaOS'] == 1:
+            elif data['isVendaOS'] == 0:
                  postFinanceiro = Financeiros(None, compras.id, idBanco, forma_pgto, descricao, 0, total, dataVencimento, compras.dataCompra, None, 0, parcelas)
             db.session.add(postFinanceiro)
                 #---------------------------------------------------
