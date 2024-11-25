@@ -89,7 +89,6 @@ def clientesController():
                 cliente.numero = data.get('numero', cliente.numero)   
                 cliente.cidade = data.get('cidade', cliente.cidade)   
                 cliente.complemento = data.get('complemento', cliente.complemento) 
-                cliente.isActive = data.get('isActive', cliente.isActive)   
 
                 db.session.commit()
                 return "cliente atualizado com sucesso", 202
