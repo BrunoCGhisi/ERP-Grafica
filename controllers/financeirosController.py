@@ -85,15 +85,21 @@ def financeirosController():
                
                 financeiro.dataVencimento = data.get('dataVencimento', financeiro.dataVencimento)
                 financeiro.dataCompetencia = data.get('dataCompetencia', financeiro.dataCompetencia)       
+                
+                if financeiro.situacao == 4 and data.get('situacao', financeiro.situacao) == 2:
+                    banco.valorTotal -= financeiro.valor
+                if financeiro.situacao == 3 and data.get('situacao', financeiro.situacao) == 1:
+                    banco.valorTotal += financeiro.valor
+                
                 financeiro.situacao = data.get('situacao', financeiro.situacao)
 
                 if data.get('situacao', financeiro.situacao) == 4:
                     financeiro.dataPagamento =  date.today()
                     banco.valorTotal += financeiro.valor                
 
-                if data.get('situacao', financeiro.situacao) == 2:
+                if data.get('situacao', financeiro.situacao) == 3:
                     banco.valorTotal -= financeiro.valor 
-                    financeiro.dataPagamento = ""
+                    financeiro.dataPagamento = date.today()
 
                 db.session.commit()
                 return "financeiro atualizado com sucesso", 202
