@@ -141,15 +141,28 @@ def vendasController():
                     financeiro.parcelas = fin_data.get('parcelas', financeiro.parcelas)
                     financeiro.idFormaPgto = fin_data.get('idFormaPgto', financeiro.idFormaPgto)
                     lastDesc = venda.desconto
-                    
-                    venda.desconto = data.get('desconto', venda.desconto)
-                    
+
 
                     if data.get('desconto', venda.desconto) != 0 and data.get('desconto', venda.desconto) != None and lastDesc != data.get('desconto', venda.desconto) :
-                        valorTotal = fin_data.get('valor', financeiro.valor) * (1- data.get('desconto', venda.desconto) / 100 )
-                        financeiro.valor = valorTotal
+                        if lastDesc != 0 and lastDesc != None:
+                            valorTotal = fin_data.get('valor', financeiro.valor) / (1- lastDesc / 100 )
+                            print("valorTotal retirada", valorTotal )
+                            valorTotalPós = valorTotal * (1- data.get('desconto', venda.desconto) / 100 )
+                            print("valorTotal colocada", valorTotalPós )
+                            financeiro.valor = valorTotalPós
+                        else:
+                            valorTotal = fin_data.get('valor', financeiro.valor) * (1- data.get('desconto', venda.desconto) / 100 )
+                            financeiro.valor = valorTotal
+
+                    elif lastDesc != 0 and lastDesc != None:
+                       
+                        if data.get('desconto', venda.desconto) == 0 or data.get('desconto', venda.desconto) == None:
+                            valorTotal = fin_data.get('valor', financeiro.valor) / (1- lastDesc / 100 )
+                            financeiro.valor = valorTotal
                     else:
                         financeiro.valor = fin_data.get('valor', financeiro.valor)
+
+                    venda.desconto = data.get('desconto', venda.desconto)
                     
                         
                     if financeiro.idFormaPgto != 1 and financeiro.idFormaPgto != 2 and financeiro.idFormaPgto != 4:     

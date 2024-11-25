@@ -149,8 +149,20 @@ def comprasController():
                     lastDesc = compra.desconto
                     compra.desconto = data.get('desconto', compra.desconto)
                     if data.get('desconto', compra.desconto) != 0 and data.get('desconto', compra.desconto) != None and lastDesc != data.get('desconto', compra.desconto):
-                        valorTotal = total * (1- data.get('desconto', compra.desconto) / 100 )
-                        financeiro.valor = valorTotal
+                        if lastDesc != 0 and lastDesc != None:
+                            valorTotal = fin_data.get('valor', financeiro.valor) / (1- lastDesc / 100 )
+                            print("valorTotal retirada", valorTotal )
+                            valorTotalPós = valorTotal * (1- data.get('desconto', compra.desconto) / 100 )
+                            print("valorTotal colocada", valorTotalPós )
+                            financeiro.valor = valorTotalPós
+                        else:
+                            valorTotal = fin_data.get('valor', financeiro.valor) * (1- data.get('desconto', compra.desconto) / 100 )
+                            financeiro.valor = valorTotal
+                    elif lastDesc != 0 and lastDesc != None:
+                       
+                        if data.get('desconto', compra.desconto) == 0 or data.get('desconto', compra.desconto) == None:
+                            valorTotal = fin_data.get('valor', financeiro.valor) / (1- lastDesc / 100 )
+                            financeiro.valor = valorTotal
                     else:
                         financeiro.valor = total
 
@@ -164,10 +176,6 @@ def comprasController():
                     if compra.isCompraOS == 0 and data.get('isCompraOS', compra.isCompraOS) == 1:
                         financeiro.situacao = 2
                     
-                    
-
-
-                
                 if compra is None:
                     return{'error': 'compra não encontrado'}, 405
                 
