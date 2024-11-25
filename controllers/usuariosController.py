@@ -26,7 +26,7 @@ def usuariosController():
             newData = [usuario.to_dict() for usuario in data] #pegando cada obj usuario, e tranformando num dicionario
             usuariosAtivos = [i for i in newData if i['isActive']] 
             usuariosDesativos = [i for i in newData if not i['isActive']] 
-            return {'usuariosAtivos': usuariosAtivos, 'usuariosDesativos': usuariosDesativos,
+            return {"allData": newData, 'usuariosAtivos': usuariosAtivos, 'usuariosDesativos': usuariosDesativos,
             }, 200
         
         except Exception as e:
