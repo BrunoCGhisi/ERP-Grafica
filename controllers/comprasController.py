@@ -113,11 +113,29 @@ def comprasController():
 
     elif request.method == 'PUT':
             try:
+                total = 0
                 id = request.args.to_dict().get('id')
                 compra = Compras.query.get(id)
                 data = request.get_json() #pega todos os dados
                 dataCompras_insumos = data.get('compras_insumos', []) #preciso pegar os ID's disso aqui, passa no json           
                 dataFinanceiros = data.get('financeiros', [])
+
+                # PUT EM VP ---------------------------
+                compras_insumos = Compras_insumos.query.filter(Compras_insumos.idCompra == id).all()
+
+                for i in range(len(compras_insumos)):
+                    compra_insumo = compras_insumos[i]
+                    ci_data = dataCompras_insumos[i]
+
+                    compra_insumo.idInsumo = ci_data.get('idInsumo', compra_insumo.idInsumo)
+                    compra_insumo.largura = ci_data.get('largura', compra_insumo.largura)
+                    compra_insumo.comprimento = ci_data.get('comprimento', compra_insumo.comprimento)
+                    compra_insumo.preco = ci_data.get('preco', compra_insumo.preco)
+
+                    total += ((compra_insumo.largura) * (compra_insumo.comprimento)) * (compra_insumo.preco)
+
+
+
                  # PUT EM FINANCEIROS ---------------------------
                 financeiros = Financeiros.query.filter(Financeiros.idCompra == id).all()
                 for i in range(len(financeiros)):
@@ -127,13 +145,14 @@ def comprasController():
 
                     financeiro.parcelas = fin_data.get('parcelas', financeiro.parcelas)
                     financeiro.idFormaPgto = fin_data.get('idFormaPgto', financeiro.idFormaPgto)
+                    
                     lastDesc = compra.desconto
                     compra.desconto = data.get('desconto', compra.desconto)
                     if data.get('desconto', compra.desconto) != 0 and data.get('desconto', compra.desconto) != None and lastDesc != data.get('desconto', compra.desconto):
-                        valorTotal = fin_data.get('valor', financeiro.valor) * (1- data.get('desconto', compra.desconto) / 100 )
+                        valorTotal = total * (1- data.get('desconto', compra.desconto) / 100 )
                         financeiro.valor = valorTotal
                     else:
-                        financeiro.valor = fin_data.get('valor', financeiro.valor)
+                        financeiro.valor = total
 
                     if financeiro.idFormaPgto != 1 and financeiro.idFormaPgto != 2 and financeiro.idFormaPgto != 4:     
                         descricao = "Compra: " + str(id)+ ", " + "Parcelas: " + str(fin_data.get('parcelas', financeiro.parcelas))
@@ -146,17 +165,7 @@ def comprasController():
                         financeiro.situacao = 2
                     
                     
-                # PUT EM VP ---------------------------
-                compras_insumos = Compras_insumos.query.filter(Compras_insumos.idCompra == id).all()
 
-                for i in range(len(compras_insumos)):
-                    compra_insumo = compras_insumos[i]
-                    ci_data = dataCompras_insumos[i]
-
-                    compra_insumo.idInsumo = ci_data.get('idInsumo', compra_insumo.idInsumo)
-                    compra_insumo.largura = ci_data.get('largura', compra_insumo.largura)
-                    compra_insumo.comprimento = ci_data.get('comprimento', compra_insumo.comprimento)
-                    compra_insumo.preco = ci_data.get('preco', compra_insumo.preco)
 
                 
                 if compra is None:
