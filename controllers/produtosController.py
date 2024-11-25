@@ -35,7 +35,7 @@ def getProdutos():
         try:
             produtos = []
             data = Produtos.query.all()
-            newData = {'produtos': [produto.to_dict() for produto in data]}  # pegando cada obj produto e transformando em dicionário
+            newData = {"allData": newData, 'produtos': [produto.to_dict() for produto in data]}  # pegando cada obj produto e transformando em dicionário
             for item in newData['produtos']:
                 produtos.append(item)
             return produtos, 200
@@ -65,7 +65,7 @@ def produtosController():
             produtosAtivos = [i for i in newData if i['isActive']] 
             produtosDesativos = [i for i in newData if not i['isActive']] 
 
-            return {'produtosAtivos': produtosAtivos,
+            return {"allData": newData,'produtosAtivos': produtosAtivos,
                     'produtosDesativos': produtosDesativos }, 200
             
         except Exception as e:

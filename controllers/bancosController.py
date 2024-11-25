@@ -37,6 +37,7 @@ def bancosController():
             bancoDesativos = [i for i in getBancos if not i['isActive']] 
 
             return {
+                "allData": getBancos,
                 "getBancos": getBanco,
                 "bancoDesativos": bancoDesativos
             }, 200

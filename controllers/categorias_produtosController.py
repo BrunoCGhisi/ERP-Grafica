@@ -35,7 +35,7 @@ def Categorias_produtosController():
             newData = [categoria_produto.to_dict() for categoria_produto in data] #pegando cada obj categoria_produto, e tranformando num dicionario
             catProdAtivos = [i for i in newData if i['isActive']] 
             catProdDesativos = [i for i in newData if not i['isActive']] 
-            return {'catProdAtivos': catProdAtivos, 'catProdDesativos': catProdDesativos}, 200
+            return {"allData": newData, 'catProdAtivos': catProdAtivos, 'catProdDesativos': catProdDesativos}, 200
         
         except Exception as e:
             return f"Não foi possível buscar. Erro {str(e)}", 405

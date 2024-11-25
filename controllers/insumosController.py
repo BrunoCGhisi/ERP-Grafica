@@ -21,7 +21,7 @@ def insumosController():
             insumosAtivos = [i for i in newData if i['isActive']] 
             insumosDesativos = [i for i in newData if not i['isActive']] 
 
-            return {'insumosAtivos': insumosAtivos,
+            return {"allData": newData, 'insumosAtivos': insumosAtivos,
                     'insumosDesativos': insumosDesativos }, 200
         except Exception as e:
             return f'Não foi possível buscar. Erro {str(e)}', 405
