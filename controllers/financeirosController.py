@@ -11,11 +11,29 @@ from flask import jsonify
 
 def getResumoFinanceiro():
     try:
-        total_receber = db.session.query(func.sum(Financeiros.valor)).filter_by(isPagarReceber=False).scalar() or 0.0
-        total_pagar = db.session.query(func.sum(Financeiros.valor)).filter_by(isPagarReceber=True).scalar() or 0.0
+        # Contas a Receber (não pagas), ou seja, aquelas com situacao == 2 (A Receber) e situacao diferente de 4 (Recebido)
+        total_receber = db.session.query(func.sum(Financeiros.valor)).filter(
+            Financeiros.situacao == 2,  # A Receber
+            Financeiros.dataPagamento == None  # Não foi paga
+        ).scalar() or 0.0
 
-        qtd_contas_receber = db.session.query(func.count(Financeiros.id)).filter_by(isPagarReceber=False).scalar() or 0
-        qtd_contas_pagar = db.session.query(func.count(Financeiros.id)).filter_by(isPagarReceber=True).scalar() or 0
+        # Contas a Pagar (não recebidas), ou seja, aquelas com situacao == 1 (A Pagar) e situacao diferente de 3 (Pago)
+        total_pagar = db.session.query(func.sum(Financeiros.valor)).filter(
+            Financeiros.situacao == 1,  # A Pagar
+            Financeiros.dataPagamento == None  # Não foi paga
+        ).scalar() or 0.0
+
+        # Quantidade de contas a receber (não pagas)
+        qtd_contas_receber = db.session.query(func.count(Financeiros.id)).filter(
+            Financeiros.situacao == 2,  # A Receber
+            Financeiros.dataPagamento == None  # Não foi paga
+        ).scalar() or 0
+
+        # Quantidade de contas a pagar (não pagas)
+        qtd_contas_pagar = db.session.query(func.count(Financeiros.id)).filter(
+            Financeiros.situacao == 1,  # A Pagar
+            Financeiros.dataPagamento == None  # Não foi paga
+        ).scalar() or 0
 
         resumo = {
             "totalReceber": total_receber,
@@ -23,9 +41,12 @@ def getResumoFinanceiro():
             "qtdContasReceber": qtd_contas_receber,
             "qtdContasPagar": qtd_contas_pagar,
         }
+
         return jsonify(resumo), 200
+
     except Exception as e:
         return jsonify({"erro": f"Não foi possível calcular o resumo financeiro. Erro: {str(e)}"}), 405
+
 
 def financeirosController():
 
