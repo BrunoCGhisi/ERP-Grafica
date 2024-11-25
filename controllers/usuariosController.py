@@ -20,10 +20,13 @@ def usuariosController():
     elif request.method == 'GET':
         try:
             data = Usuarios.query.all()
+            newData = []
+            usuariosAtivos = []
+            usuariosDesativos = []
             newData = [usuario.to_dict() for usuario in data] #pegando cada obj usuario, e tranformando num dicionario
             usuariosAtivos = [i for i in newData if i['isActive']] 
             usuariosDesativos = [i for i in newData if not i['isActive']] 
-            return {'usuariosAtivos': usuariosAtivos, 'usuariosDesativos': usuariosDesativos,
+            return {"allData": newData, 'usuariosAtivos': usuariosAtivos, 'usuariosDesativos': usuariosDesativos,
             }, 200
         
         except Exception as e:
@@ -41,10 +44,13 @@ def usuariosController():
                     return{'error': 'Usuário não encontrado'}, 405
                 
                 usuario.nome = data.get('nome', usuario.nome)
-                usuario.email = data.get('email', usuario.email)   
-                usuario.senha = generate_password_hash(data.get('senha'))
-                usuario.isAdm = data.get('isAdm', usuario.isAdm) 
-                usuario.isActive = data.get('isActive', usuario.isActive)     
+
+                usuario.isAdm = data.get('isAdm', usuario.isAdm)
+                usuario.isActive = data.get('isActive', usuario.isActive)
+
+                usuario.email = data.get('email', usuario.email)
+                
+                usuario.senha = generate_password_hash(data.get('senha', usuario.senha) )
 
                 db.session.commit()
                 return "Usuário atualizado com sucesso", 202

@@ -31,6 +31,9 @@ def bancosController():
     elif request.method == 'GET':
         try:
             data = Bancos.query.all()
+            getBancos = []
+            getBanco = []
+            bancoDesativos = []
             #newData = {'bancos': [banco.to_dict() for banco in data]}  # Transformando para JSON
             getBancos = [banco.to_dict() for banco in data]
             getBanco = [i for i in getBancos if i['isActive']] 

@@ -95,6 +95,7 @@ def vendasController():
             idVenda = []
             fkVenda = []
             getVendasP = {"vendas_produto": []}
+            getVendas = []
 
             for venda_produto in newDataVendas_produtos['vendas_produtos']:
                 fkVenda.append(venda_produto['idVenda']) 
