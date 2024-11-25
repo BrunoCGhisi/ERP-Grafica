@@ -6,6 +6,26 @@ from models.insumos import Insumos
 from models.produtos import Produtos
 from models.vendas_produtos import Vendas_produtos
 from datetime import date
+from sqlalchemy import func
+from flask import jsonify
+
+def getResumoFinanceiro():
+    try:
+        total_receber = db.session.query(func.sum(Financeiros.valor)).filter_by(isPagarReceber=False).scalar() or 0.0
+        total_pagar = db.session.query(func.sum(Financeiros.valor)).filter_by(isPagarReceber=True).scalar() or 0.0
+
+        qtd_contas_receber = db.session.query(func.count(Financeiros.id)).filter_by(isPagarReceber=False).scalar() or 0
+        qtd_contas_pagar = db.session.query(func.count(Financeiros.id)).filter_by(isPagarReceber=True).scalar() or 0
+
+        resumo = {
+            "totalReceber": total_receber,
+            "totalPagar": total_pagar,
+            "qtdContasReceber": qtd_contas_receber,
+            "qtdContasPagar": qtd_contas_pagar,
+        }
+        return jsonify(resumo), 200
+    except Exception as e:
+        return jsonify({"erro": f"Não foi possível calcular o resumo financeiro. Erro: {str(e)}"}), 405
 
 def financeirosController():
 
