@@ -89,8 +89,10 @@ def financeirosController():
                 
                 if financeiro.situacao == 4 and data.get('situacao', financeiro.situacao) == 2:
                     banco.valorTotal -= financeiro.valor
+                    financeiro.dataPagamento = None
                 if financeiro.situacao == 3 and data.get('situacao', financeiro.situacao) == 1:
                     banco.valorTotal += financeiro.valor
+                    financeiro.dataPagamento = None
                 
                 financeiro.situacao = data.get('situacao', financeiro.situacao)
 
