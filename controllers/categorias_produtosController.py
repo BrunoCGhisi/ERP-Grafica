@@ -24,7 +24,7 @@ def Categorias_produtosController():
             categorias_produtos = Categorias_produtos(data['categoria'], True)
             db.session.add(categorias_produtos)
             db.session.commit()
-            return "Categorias_produtos adicionados com sucesso!", 200
+            return "Categoria adicionada com sucesso!", 200
         except Exception as e:
             return f"Não foi possível inserir. Erro {str(e)}", 405
         
@@ -32,6 +32,9 @@ def Categorias_produtosController():
     elif request.method == 'GET':
         try:
             data = Categorias_produtos.query.all()
+            newData = []
+            catProdAtivos = []
+            catProdDesativos = []
             newData = [categoria_produto.to_dict() for categoria_produto in data] #pegando cada obj categoria_produto, e tranformando num dicionario
             catProdAtivos = [i for i in newData if i['isActive']] 
             catProdDesativos = [i for i in newData if not i['isActive']] 
@@ -54,10 +57,10 @@ def Categorias_produtosController():
                 categoria_produto.isActive  = data.get('isActive', categoria_produto.categoria )
 
                 db.session.commit()
-                return "categoria_produto atualizado com sucesso", 202
+                return "Categoria atualizada com sucesso", 202
 
             except Exception as e:
-                return f"Não foi possível atualizar o categoria_produto. Erro:{str(e)}", 405
+                return f"Não foi possível atualizar a categoria. Erro:{str(e)}", 405
             
 
     elif request.method == 'DELETE':
@@ -73,6 +76,6 @@ def Categorias_produtosController():
             return "categoria_produto deletado com sucesso", 202
 
         except Exception as e:
-            return f"Não foi possível apagar o categoria_produto. Erro:{str(e)}", 405
+            return f"Não foi possível apagar a categoria. Erro:{str(e)}", 405
         
 

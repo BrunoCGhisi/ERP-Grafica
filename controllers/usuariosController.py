@@ -20,6 +20,9 @@ def usuariosController():
     elif request.method == 'GET':
         try:
             data = Usuarios.query.all()
+            newData = []
+            usuariosAtivos = []
+            usuariosDesativos = []
             newData = [usuario.to_dict() for usuario in data] #pegando cada obj usuario, e tranformando num dicionario
             usuariosAtivos = [i for i in newData if i['isActive']] 
             usuariosDesativos = [i for i in newData if not i['isActive']] 

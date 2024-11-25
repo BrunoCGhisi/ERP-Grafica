@@ -55,6 +55,7 @@ def clientesController():
     elif request.method == 'GET':
         try:
             data = Clientes.query.all()
+            newData= []
             newData = {'clientes': [cliente.to_dict() for cliente in data], 'clientesComFornecedore': []} #pegando cada obj cliente, e tranformando num dicionario
             return newData, 200
 

@@ -17,6 +17,9 @@ def insumosController():
     elif request.method == 'GET':
         try:
             data = Insumos.query.all()
+            newData = []
+            insumosAtivos = []
+            insumosDesativos = []
             newData = [insumo.to_dict() for insumo in data]  # pegando cada obj insumo e transformando em dicionário
             insumosAtivos = [i for i in newData if i['isActive']] 
             insumosDesativos = [i for i in newData if not i['isActive']] 

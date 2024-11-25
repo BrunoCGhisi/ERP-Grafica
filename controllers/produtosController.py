@@ -61,6 +61,9 @@ def produtosController():
     elif request.method == 'GET':
         try:
             data = Produtos.query.all()
+            newData = []
+            produtosAtivos = []
+            produtosDesativos = []
             newData = [produto.to_dict() for produto in data] #pegando cada obj produto, e 
             produtosAtivos = [i for i in newData if i['isActive']] 
             produtosDesativos = [i for i in newData if not i['isActive']] 

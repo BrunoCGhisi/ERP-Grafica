@@ -83,6 +83,7 @@ def comprasController():
            
             idCompra = []
             fkCompra = []
+            getCompras = []
             getComprasI = {"compra_insumo": []}
 
             for compra_insumo in newDataCompras_insumos['compras_insumos']:
