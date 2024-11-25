@@ -42,8 +42,12 @@ def usuariosController():
                 
                 usuario.nome = data.get('nome', usuario.nome)
 
-                usuario.isAdm = data.get('isAdm', usuario.isAdm) 
-                usuario.isActive = data.get('isActive', usuario.isActive)     
+                usuario.isAdm = data.get('isAdm', usuario.isAdm)
+                usuario.isActive = data.get('isActive', usuario.isActive)
+
+                usuario.email = data.get('email', usuario.email)
+                
+                usuario.senha = generate_password_hash(data.get('senha', usuario.senha) )
 
                 db.session.commit()
                 return "Usuário atualizado com sucesso", 202
