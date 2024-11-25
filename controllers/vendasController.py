@@ -47,7 +47,7 @@ def vendasController():
                 quantidade = objVp.get('quantidade')  # Retorna None se 'quantidade' não existe
                 produtos = Produtos.query.filter(Produtos.id == objVp['idProduto']).all()
                 for item in produtos:
-                    gastoEstoque = (item.largura * item.comprimento) * quantidade
+                    gastoEstoque = ((item.largura / 100) * (item.comprimento / 100)) * quantidade
                     insumos = Insumos.query.filter(Insumos.id == item.idInsumo).all()
                     for ins in insumos:
                         if ins.estoque <= gastoEstoque:
@@ -177,7 +177,7 @@ def vendasController():
 
                             dataProd = Produtos.query.get(idProduto)
                             dataInsumo = Insumos.query.get(dataProd.idInsumo)
-                            desc = quantidade * (dataProd.largura * dataProd.comprimento)
+                            desc = quantidade * ((dataProd.largura / 100) * (dataProd.comprimento / 100))
                             dataInsumo.estoque += desc
                            
 
@@ -214,12 +214,12 @@ def vendasController():
                         dataProd = Produtos.query.get(idProduto)
                         insumos = Insumos.query.filter(Insumos.id == dataProd.idInsumo).all()
                         for ins in insumos:
-                            if (quantidade * (dataProd.largura * dataProd.comprimento)) > ins.estoque or ins.estoque == 0:
+                            if (quantidade * ((dataProd.largura / 100) * (dataProd.comprimento / 100))) > ins.estoque or ins.estoque == 0:
                                 return f'Estoque insuficiente para a produção do produto: {dataProd.nome} , reponha!', 200
 
                         dataInsumo = Insumos.query.get(dataProd.idInsumo)
                        
-                        desc = quantidade * (dataProd.largura * dataProd.comprimento)
+                        desc = quantidade * ((dataProd.largura / 100) * (dataProd.comprimento / 100))
                        
                         dataInsumo.estoque -= desc
                        
