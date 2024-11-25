@@ -10,6 +10,10 @@ def login():
 
     # Busca o usuário pelo email
     usuario = Usuarios.query.filter_by(email=data['email']).first()
+    print("LUIZ", usuario)
+
+    print("SENHA", data['senha'])
+    print("SENHA2", usuario.verify_senha(data['senha']))
 
     # Verifica se o usuário existe e se a senha corresponde ao hash armazenado
     if usuario and usuario.verify_senha(data['senha']):
