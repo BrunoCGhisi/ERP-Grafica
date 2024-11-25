@@ -41,8 +41,7 @@ def usuariosController():
                     return{'error': 'Usuário não encontrado'}, 405
                 
                 usuario.nome = data.get('nome', usuario.nome)
-                usuario.email = data.get('email', usuario.email)   
-                usuario.senha = generate_password_hash(data.get('senha'))
+
                 usuario.isAdm = data.get('isAdm', usuario.isAdm) 
                 usuario.isActive = data.get('isActive', usuario.isActive)     
 
