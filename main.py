@@ -24,4 +24,4 @@ class MyServer(): #classe que inicializa e guarda o funcionamento do flask
 if __name__ == '__main__' :
     app = MyServer() #instanciando
     app.run() #inicializando
-    
+            

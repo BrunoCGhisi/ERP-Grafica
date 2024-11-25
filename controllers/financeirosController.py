@@ -4,35 +4,82 @@ from models.financeiros import Financeiros
 from models.bancos import Bancos
 from models.insumos import Insumos 
 from models.produtos import Produtos
-from models.vendas_produtos import Vendas_produtos
+from models.vendas import Vendas
 from datetime import date
 from sqlalchemy import func
 from flask import jsonify
+from sqlalchemy import extract
+from datetime import date, datetime
 
+
+def vendasDoMesAtual():
+    try:
+        hoje = date.today()
+        vendas_mes = db.session.query(
+            Financeiros.dataCompetencia,
+            func.sum(Financeiros.valor).label('faturamento')
+        ).filter(
+            Financeiros.idVenda.isnot(None),  # Apenas vendas
+            extract('month', Financeiros.dataCompetencia) == hoje.month,
+            extract('year', Financeiros.dataCompetencia) == hoje.year
+        ).group_by(Financeiros.dataCompetencia).all()
+
+        # Verifica se dataCompetencia é string e converte para objeto de data
+        data = []
+        for venda in vendas_mes:
+            if isinstance(venda.dataCompetencia, str):
+                data_competencia = datetime.strptime(venda.dataCompetencia, "%Y-%m-%d")
+            else:
+                data_competencia = venda.dataCompetencia
+
+            data.append({
+                "dataVenda": data_competencia.strftime('%d/%m'),
+                "faturamento": float(venda.faturamento)
+            })
+
+        return jsonify(data), 200
+
+    except ValueError as ve:
+        return jsonify({"erro": f"Erro nos dados: {str(ve)}"}), 400
+    except Exception as e:
+        return jsonify({"erro": f"Erro interno: {str(e)}"}), 500
+    
 def getResumoFinanceiro():
     try:
-        # Contas a Receber (não pagas), ou seja, aquelas com situacao == 2 (A Receber) e situacao diferente de 4 (Recebido)
+        # Data atual
+        hoje = date.today()
+
+        # Contas a Receber e Contas a Pagar (já existente)
         total_receber = db.session.query(func.sum(Financeiros.valor)).filter(
-            Financeiros.situacao == 2,  # A Receber
-            Financeiros.dataPagamento == None  # Não foi paga
+            Financeiros.situacao == 2,
+            Financeiros.dataPagamento == None
         ).scalar() or 0.0
 
-        # Contas a Pagar (não recebidas), ou seja, aquelas com situacao == 1 (A Pagar) e situacao diferente de 3 (Pago)
         total_pagar = db.session.query(func.sum(Financeiros.valor)).filter(
-            Financeiros.situacao == 1,  # A Pagar
-            Financeiros.dataPagamento == None  # Não foi paga
+            Financeiros.situacao == 1,
+            Financeiros.dataPagamento == None
         ).scalar() or 0.0
 
-        # Quantidade de contas a receber (não pagas)
         qtd_contas_receber = db.session.query(func.count(Financeiros.id)).filter(
-            Financeiros.situacao == 2,  # A Receber
-            Financeiros.dataPagamento == None  # Não foi paga
+            Financeiros.situacao == 2,
+            Financeiros.dataPagamento == None
         ).scalar() or 0
 
-        # Quantidade de contas a pagar (não pagas)
         qtd_contas_pagar = db.session.query(func.count(Financeiros.id)).filter(
-            Financeiros.situacao == 1,  # A Pagar
-            Financeiros.dataPagamento == None  # Não foi paga
+            Financeiros.situacao == 1,
+            Financeiros.dataPagamento == None
+        ).scalar() or 0
+
+        # Compras registradas hoje
+        compras_hoje = db.session.query(func.count(Financeiros.id)).filter(
+            Financeiros.idCompra.isnot(None),
+            Financeiros.dataCompetencia == hoje
+        ).scalar() or 0
+
+        # Vendas registradas hoje
+        vendas_hoje = db.session.query(func.count(Financeiros.id)).filter(
+            Financeiros.idVenda.isnot(None),
+            Financeiros.dataCompetencia == hoje
         ).scalar() or 0
 
         resumo = {
@@ -40,12 +87,14 @@ def getResumoFinanceiro():
             "totalPagar": total_pagar,
             "qtdContasReceber": qtd_contas_receber,
             "qtdContasPagar": qtd_contas_pagar,
+            "comprasHoje": compras_hoje,
+            "vendasHoje": vendas_hoje,
         }
 
         return jsonify(resumo), 200
 
     except Exception as e:
-        return jsonify({"erro": f"Não foi possível calcular o resumo financeiro. Erro: {str(e)}"}), 405
+        return jsonify({"erro": f"Erro ao calcular resumo financeiro: {str(e)}"}), 405
 
 
 def financeirosController():
