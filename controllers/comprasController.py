@@ -175,7 +175,9 @@ def comprasController():
                     financeiro.idBanco = fin_data.get('idBanco', financeiro.idBanco)
 
                     if compra.isCompraOS == 0 and data.get('isCompraOS', compra.isCompraOS) == 1:
-                        financeiro.situacao = 2
+                        financeiro.situacao = 1
+                    if compra.isCompraOS ==1 and data.get('isCompraOS', compra.isCompraOS) == 0:
+                        financeiro.situacao = 0
                     
                 if compra is None:
                     return{'error': 'compra não encontrado'}, 405

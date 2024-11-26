@@ -175,6 +175,8 @@ def vendasController():
 
                     if venda.isVendaOS == 0 and data.get('isVendaOS', venda.isVendaOS) == 1:
                         financeiro.situacao = 2
+                    if venda.isVendaOS == 1 and data.get('isVendaOS', venda.isVendaOS) == 0:
+                        financeiro.situacao = 0
                     
                 venda.isVendaOS = data.get('isVendaOS', venda.isVendaOS)
                 
